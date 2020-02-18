@@ -2,7 +2,7 @@
 #local:      INE, Lisboa
 #Rversion:   3.6.1
 #criado:     23.01.2020
-#modificado: 03.02.2020
+#modificado: 18.02.2020
 
 setwd("2020/2020.01.23_escolas_OE-IUT2020/bin/")
 
@@ -97,6 +97,15 @@ a1 <- "ESCOLA.*SUPERIOR.*(EDUCAÇÃO|EDUCACÃO|EDUCAÇAO|EDUCACAO).*(SANTARÉM|S
 a2 <- "INSTITUTO.*(POLITÉCNICO|POLITECNICO).*(SANTARÉM|SANTAREM)"
 s1 <- grepl(a1,toupper(d2$PLACE)) | grepl(a2,toupper(d2$PLACE))
 d2$PLACE[s1] <- "Escola Superior de Educação de Santarém"
+d2$PLACE <- factor(d2$PLACE)
+a1 <- "SINES"
+a2 <- "VASCO.*GAMA"
+s1 <- grepl(a1,toupper(d2$PLACE)) | grepl(a2,toupper(d2$PLACE))
+d2$PLACE[s1] <- "Escola Básica Vasco da Gama de Sines"
+d2$PLACE <- factor(d2$PLACE)
+a1 <- "FERREIRA.*DIAS"
+s1 <- grepl(a1,toupper(d2$PLACE))
+d2$PLACE[s1] <- "Escola Secundária Ferreira Dias"
 d2$PLACE <- factor(d2$PLACE)
 
 ### 1.2.3. Reformat field GRADE
@@ -205,11 +214,11 @@ a1 <- "(NADA|NAO|NÃO|ZERO)"
 s1 <- grepl(a1,toupper(d2$PRICE_NEW))
 d2$PRICE_NEW[s1] <- 0
 d2$PRICE_NEW <- gsub(",",".",d2$PRICE_NEW)
-a1 <- "(\\s|CERCA DE|NO MAXIMO|NO MÁXIMO|ATÉ|ATE|MENOS DE|€|EUROS)"
+a1 <- "(\\s|CERCA DE|NO MAXIMO|NO MÁXIMO|MAXIMO|MÁXIMO|ATÉ|ATE|MENOS DE|OU MENOS|MENOS|€|EUROS)"
 d2$PRICE_NEW <- as.numeric(gsub(a1,"",toupper(d2$PRICE_NEW)))
 
 ### 1.2.12. Reformat field SOCIALNET
-a1 <- "(WHATSAPP|WPP|WATSAPP|WHATZAP)"
+a1 <- "(WHATSAPP|WPP|WATSAPP|WHATZAP|WATS APP|WHATSHAPP)"
 s1 <- grepl(a1,toupper(d2$SOCIALNET))
 d2$SOCIALNET[s1] <- "Whatsapp"
 a1 <- "YOUTUBE"
