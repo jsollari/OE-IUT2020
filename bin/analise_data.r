@@ -4,31 +4,32 @@
 #criado:     23.01.2020
 #modificado: 18.02.2020
 
-setwd("2020/2020.01.23_escolas_OE-IUT2020/bin/")
+setwd("2022/2022.10.13_escolas_OE-IUT2020/bin/")
+
+library("ggplot2")
 
 #0. INDEX
 {
-#1. DATA WRANGLING
-##1.1. READ RAW DATA
-##1.2. FORMAT RAW DATA
-##1.3. AUTOMATIC CHECKS
-##1.4. MANUALL CHECKS
-##1.5. WRITE DATA
-#2. EXPLORE DATA
-#2. EXPLORE DATA
-## 2.1. VISUALIZATION
-## 2.2. SUMMARY STATISTICS
-#3. MODEL DATA
-## 3.1. PRICE_NEW ~ PRICE
-## 3.2. PRICE_NEW ~ PRICE + PLAY_PHONE
-## 3.3. PLAY_PHONE ~ PRICE
-## 3.4. PLAY_PHONE ~ PRICE + SOCIALNET
+# 1. DATA WRANGLING
+# 1.1. READ RAW DATA
+# 1.2. FORMAT RAW DATA
+# 1.3. AUTOMATIC CHECKS
+# 1.4. MANUALL CHECKS
+# 1.5. WRITE DATA
+# 2. EXPLORE DATA
+# 2.1. VISUALIZATION
+# 2.2. SUMMARY STATISTICS
+# 3. MODEL DATA
+# 3.1. PRICE_NEW ~ PRICE
+# 3.2. PRICE_NEW ~ PRICE + PLAY_OTHER
+# 3.3. PLAY_OTHER ~ PRICE
+# 3.4. PLAY_OTHER ~ PRICE + SOCIALNET
 
 }
 # 1. DATA WRANGLING
 {
 ## 1.1. READ RAW DATA
-f1 <- "../data/data_raw.csv"
+f1 <- "../data/dataraw_20221022.csv"
 d1 <- read.table(
   file=f1,
   header=FALSE,
@@ -64,48 +65,50 @@ d2 <- d1
 d2$TIME <- as.POSIXlt(d2$TIME)
 
 ### 1.2.2. Reformat field PLACE
-a1 <- "(AL\\sBERTO|AL-BERTO)"
-s1 <- grepl(a1,toupper(d2$PLACE))
-d2$PLACE[s1] <- "Escola Secundária Poeta Al Berto"
-a1 <- "QUINTA.*(MARQUÊS|MARQUES)"
-s1 <- grepl(a1,toupper(d2$PLACE))
-d2$PLACE[s1] <- "Escola Secundária Quinta do Marquês"
-a1 <- "INSTITUTO.*DESENVOLVIMENTO.*SOCIAL"
-a2 <- "(IDE|I\\.D\\.E\\.|I\\.\\sD\\.\\sE\\.)"
-s1 <- grepl(a1,toupper(d2$PLACE)) | grepl(a2,toupper(d2$PLACE))
-d2$PLACE[s1] <- "Instituto para o Desenvolvimento Social"
-a1 <- "FREI.*(LUIS|LUÍS).*SOUSA"
-s1 <- grepl(a1,toupper(d2$PLACE))
-d2$PLACE[s1] <- "Externato Frei Luís de Sousa"
-a1 <- "GUADALUPE"
-s1 <- grepl(a1,toupper(d2$PLACE))
-d2$PLACE[s1] <- "Colégio Guadalupe"
-a1 <- "(FUNDAO|FUNDÃO)"
-s1 <- grepl(a1,toupper(d2$PLACE))
-d2$PLACE[s1] <- "Agrupamento de Escolas do Fundão"
-a1 <- "(ANTÓNIO|ANTÔNIO|ANTONIO).*(SÉRGIO|SERGIO)"
-s1 <- grepl(a1,toupper(d2$PLACE))
-d2$PLACE[s1] <- "Escola Secundária António Sérgio"
-a1 <- "PASSOS.*MANUEL"
-s1 <- grepl(a1,toupper(d2$PLACE))
-d2$PLACE[s1] <- "Agrupamento de Escolas Passos Manuel"
-a1 <- "INSTITUTO.*(CIÊNCIAS|CIENCIAS).*EDUCATIVAS"
-a2 <- "(ICE|I\\.C\\.E\\.|I\\.\\sC\\.\\sE\\.)"
-s1 <- grepl(a1,toupper(d2$PLACE))
-d2$PLACE[s1] <- "Instituto de Ciências Educativas"
-a1 <- "ESCOLA.*SUPERIOR.*(EDUCAÇÃO|EDUCACÃO|EDUCAÇAO|EDUCACAO).*(SANTARÉM|SANTAREM)"
-a2 <- "INSTITUTO.*(POLITÉCNICO|POLITECNICO).*(SANTARÉM|SANTAREM)"
-s1 <- grepl(a1,toupper(d2$PLACE)) | grepl(a2,toupper(d2$PLACE))
-d2$PLACE[s1] <- "Escola Superior de Educação de Santarém"
-d2$PLACE <- factor(d2$PLACE)
-a1 <- "SINES"
-a2 <- "VASCO.*GAMA"
-s1 <- grepl(a1,toupper(d2$PLACE)) | grepl(a2,toupper(d2$PLACE))
-d2$PLACE[s1] <- "Escola Básica Vasco da Gama de Sines"
-d2$PLACE <- factor(d2$PLACE)
-a1 <- "FERREIRA.*DIAS"
-s1 <- grepl(a1,toupper(d2$PLACE))
-d2$PLACE[s1] <- "Escola Secundária Ferreira Dias"
+a1    <- "(AL\\sBERTO|AL-BERTO)"
+a2    <- "QUINTA.*(MARQUÊS|MARQUES)"
+a3_1  <- "INSTITUTO.*DESENVOLVIMENTO.*SOCIAL"
+a3_2  <- "(IDE|I\\.D\\.E\\.|I\\.\\sD\\.\\sE\\.)"
+a4    <- "FREI.*(LUIS|LUÍS).*SOUSA"
+a5    <- "GUADALUPE"
+a6    <- "(FUNDAO|FUNDÃO)"
+a7    <- "(ANTÓNIO|ANTÔNIO|ANTONIO).*(SÉRGIO|SERGIO)"
+a8    <- "PASSOS.*MANUEL"
+a9_1  <- "INSTITUTO.*(CIÊNCIAS|CIENCIAS).*EDUCATIVAS"
+a9_2  <- "(ICE|I\\.C\\.E\\.|I\\.\\sC\\.\\sE\\.)"
+a10_1 <- "ESCOLA.*SUPERIOR.*(EDUCAÇÃO|EDUCACÃO|EDUCAÇAO|EDUCACAO).*(SANTARÉM|SANTAREM)"
+a10_2 <- "INSTITUTO.*(POLITÉCNICO|POLITECNICO).*(SANTARÉM|SANTAREM)"
+a11_1 <- "SINES"
+a11_2 <- "VASCO.*GAMA"
+a12 <- "FERREIRA.*DIAS"
+a13_1 <- "(LUIS|LUÍS|LUIZ|LUÍZ).*FREITAS.*BRANCO"
+a13_2 <- "(ESLFB|E\\.S\\.L\\.F\\.B\\.|E\\.\\sS\\.\\sL\\.\\sF\\.\\sB\\.)"
+s1  <- grepl(a1,toupper(d2$PLACE))
+s2  <- grepl(a2,toupper(d2$PLACE))
+s3  <- grepl(a3_1,toupper(d2$PLACE)) | grepl(a3_2,toupper(d2$PLACE))
+s4  <- grepl(a4,toupper(d2$PLACE))
+s5  <- grepl(a5,toupper(d2$PLACE))
+s6  <- grepl(a6,toupper(d2$PLACE))
+s7  <- grepl(a7,toupper(d2$PLACE))
+s8  <- grepl(a8,toupper(d2$PLACE))
+s9  <- grepl(a9_1,toupper(d2$PLACE)) | grepl(a9_2,toupper(d2$PLACE))
+s10 <- grepl(a10_1,toupper(d2$PLACE)) | grepl(a10_2,toupper(d2$PLACE))
+s11 <- grepl(a11_1,toupper(d2$PLACE)) | grepl(a11_2,toupper(d2$PLACE))
+s12 <- grepl(a12,toupper(d2$PLACE))
+s13 <- grepl(a13_1,toupper(d2$PLACE)) | grepl(a13_2,toupper(d2$PLACE))
+d2$PLACE[s1]  <- "Escola Secundária Poeta Al Berto"
+d2$PLACE[s2]  <- "Escola Secundária Quinta do Marquês"
+d2$PLACE[s3]  <- "Instituto para o Desenvolvimento Social"
+d2$PLACE[s4]  <- "Externato Frei Luís de Sousa"
+d2$PLACE[s5]  <- "Colégio Guadalupe"
+d2$PLACE[s6]  <- "Agrupamento de Escolas do Fundão"
+d2$PLACE[s7]  <- "Escola Secundária António Sérgio"
+d2$PLACE[s8]  <- "Agrupamento de Escolas Passos Manuel"
+d2$PLACE[s9]  <- "Instituto de Ciências Educativas"
+d2$PLACE[s10] <- "Escola Superior de Educação de Santarém"
+d2$PLACE[s11] <- "Escola Básica Vasco da Gama de Sines"
+d2$PLACE[s12] <- "Escola Secundária Ferreira Dias"
+d2$PLACE[s13] <- "Escola Secundária Luís Freitas Branco"
 d2$PLACE <- factor(d2$PLACE)
 
 ### 1.2.3. Reformat field GRADE
@@ -148,9 +151,7 @@ d2$GRADE[s1] <- 1
 a1 <- "(PROFESSOR|PROFESSORA|PROF)"
 s1 <- grepl(a1,toupper(d2$GRADE))
 d2$GRADE[s1] <- "Professor"
-d2$GRADE <- ifelse(d2$GRADE %in% c(1:12,"Professor"),d2$GRADE,
-            ifelse(!is.na(d2$GRADE),"Outro",NA))
-d2$GRADE <- factor(d2$GRADE,levels=c(1:12,"Professor","Outro"))
+d2$GRADE <- factor(d2$GRADE,levels=c(1:12,"Professor"))
 
 ### 1.2.4. Reformat field SMARTPHONE_YN
 d2$SMARTPHONE_YN <- ifelse(d2$SMARTPHONE_YN=="Sim",TRUE,
@@ -210,9 +211,9 @@ a1 <- "\\s|€|EUROS"
 d2$PRICE <- as.numeric(gsub(a1,"",toupper(d2$PRICE)))
 
 ### 1.2.11. Reformat field PRICE_NEW
-a1 <- "(NADA|NAO|NÃO|ZERO)"
+a1 <- "(NADA|NAO|NÃO|ZERO|^0$)"
 s1 <- grepl(a1,toupper(d2$PRICE_NEW))
-d2$PRICE_NEW[s1] <- 0
+d2$PRICE_NEW[s1] <- NA
 d2$PRICE_NEW <- gsub(",",".",d2$PRICE_NEW)
 a1 <- "(\\s|CERCA DE|NO MAXIMO|NO MÁXIMO|MAXIMO|MÁXIMO|ATÉ|ATE|MENOS DE|OU MENOS|MENOS|€|EUROS)"
 d2$PRICE_NEW <- as.numeric(gsub(a1,"",toupper(d2$PRICE_NEW)))
@@ -314,7 +315,7 @@ s1 <- d2$SOCIALNET == "Outra"
 cbind(d1$SOCIALNET,as.character(d2$SOCIALNET))[s1,] #6. SOCIALNET = "Outra"
 
 ## 1.4. WRITE DATA
-f2 <- "../results/data_ckd.csv"
+f2 <- "../results/data_20221022.csv"
 write.table(
   x=d2,
   file=f2,
@@ -330,15 +331,15 @@ d3 <- d2[d2$GRADE!="Professor",]
 d4 <- d2[d2$GRADE!="Professor" & d2$SMARTPHONE_YN,]
 
 ## 2.1. VISUALIZATION
-library("ggplot2")
 
 ### 2.1.1. SMARTPHONE_YN (Pie chart)
 tlab <- "Tem Smartphone?"
+slab <- gsub("TRUE","Sim",gsub("FALSE","Não",sort(unique(d3$SMARTPHONE))))
 ggplot(d3) +
   geom_bar(aes(x=factor(1),fill=SMARTPHONE_YN)) +
   coord_polar("y",start=0) +
   labs(x="",y="",title=tlab) +
-  scale_fill_discrete(name="",labels=c("Não","Sim")) +
+  scale_fill_discrete(name="",labels=slab) +
   scale_x_discrete(breaks=NULL,labels=NULL)
   
 ### 2.1.2. ACQUIRED (Barplot)
@@ -386,7 +387,7 @@ xlab <- "Preço (€)"
 ylab <- "Frequência"
 tlab <-  "Preço disposto a pagar por Smartphone"
 ggplot(d4) +
-  geom_histogram(aes(x=PRICE_NEW),binwidth=50) +
+  geom_histogram(aes(x=PRICE_NEW),binwidth=200) +
   labs(x=xlab,y=ylab,title=tlab)
 
 ### 2.1.7. SOCIALNET vs PLAY_PHONE (Clustered barplot)
@@ -510,27 +511,27 @@ ggplot(d5,aes(x=PRICE,y=PRICE_NEW)) +
   geom_smooth(method="lm",se=FALSE) +
   labs(x=xlab,y=ylab,title=tlab)
 
-## 3.2. PRICE_NEW ~ PRICE + PLAY_PHONE [Multiple linear regression]
+## 3.2. PRICE_NEW ~ PRICE + PLAY_OTHER [Multiple linear regression]
 d5 <- d2[d2$GRADE!="Professor" & d2$SMARTPHONE_YN & d2$PRICE_YN,]
 
-m1 <- lm(PRICE_NEW ~ PRICE + PLAY_PHONE,data=d5)
+m1 <- lm(PRICE_NEW ~ PRICE + PLAY_OTHER,data=d5)
 summary(m1)
 
 xlab <- "Preço Smartphone (€)"
 ylab <- "Preço disposto a pagar (€)"
 tlab <- "Preço vs. Preço disposto a pagar (by Jogar)"
 llab <- "Jogar"
-ggplot(d5,aes(x=PRICE,y=PRICE_NEW,color=PLAY_PHONE)) +
+ggplot(d5,aes(x=PRICE,y=PRICE_NEW,color=PLAY_OTHER)) +
   geom_point() +
   geom_abline(aes(intercept=0,slope=1),linetype="dashed") +
   geom_smooth(method="lm",se=FALSE) +
   labs(x=xlab,y=ylab,title=tlab) +
   scale_color_discrete(name=llab,labels=c("Não","Sim")) 
 
-## 3.3. PLAY_PHONE ~ PRICE [Simple logistic regression]
+## 3.3. PLAY_OTHER ~ PRICE [Simple logistic regression]
 d5 <- d2[d2$GRADE!="Professor" & d2$SMARTPHONE_YN & d2$PRICE_YN,]
 
-m1 <- glm(PLAY_PHONE ~ PRICE,family="binomial",data=d5)
+m1 <- glm(PLAY_OTHER ~ PRICE,family="binomial",data=d5)
 summary(m1)
 
 m1_val <- m1$null.deviance - m1$deviance
@@ -539,29 +540,29 @@ pchisq(m1_val,m1_df,lower.tail=FALSE)
 
 round(exp(cbind(OR=coef(m1),confint.default(m1))),2)[-1,,drop=FALSE]
 
-xlab <- "Jogar no Smartphone"
+xlab <- "Jogar noutros dispositivos"
 ylab <- "Preço (€)"
-tlab <- "Jogar no Smartphone vs. Preço do Smartphone"
+tlab <- "Jogar noutros dispositivos vs. Preço do Smartphone"
 ggplot(d5) +
-  geom_boxplot(aes(x=PLAY_PHONE,y=PRICE)) +
+  geom_boxplot(aes(x=PLAY_OTHER,y=PRICE)) +
   labs(x=xlab,y=ylab,title=tlab) +
   scale_x_discrete(labels=c("Não","Sim"))
 
 xlab <- "Preço (€)"
-ylab <- "Probabilidade de Jogar no Smartphone"
-tlab <- "Jogar no Smartphone vs. Preço do Smartphone"
-ggplot(d5,aes(x=PRICE,y=as.numeric(PLAY_PHONE))) +
+ylab <- "Probabilidade de Jogar noutros dispositivos"
+tlab <- "Jogar noutros dispositivos vs. Preço do Smartphone"
+ggplot(d5,aes(x=PRICE,y=as.numeric(PLAY_OTHER))) +
   geom_point() +
   geom_smooth(method="glm",method.args=list(family="binomial"),se=FALSE) +
   labs(x=xlab,y=ylab,title=tlab)
 
-## 3.4. PLAY_PHONE ~ PRICE + SOCIALNET [Multiple logistic regression]
+## 3.4. PLAY_OTHER ~ PRICE + SOCIALNET [Multiple logistic regression]
 d5 <- d2[d2$GRADE!="Professor" & d2$SMARTPHONE_YN & d2$PRICE_YN,]
-t1 <- table(d5$SOCIALNET,d5$PLAY_PHONE)
+t1 <- table(d5$SOCIALNET,d5$PLAY_OTHER)
 s1 <- d5$SOCIALNET %in% rownames(t1[apply(t1,1,function(x)all(x!=0)),])
 d5 <- d5[s1,]
 
-m1 <- glm(PLAY_PHONE ~ PRICE + SOCIALNET,family="binomial",data=d5)
+m1 <- glm(PLAY_OTHER ~ PRICE + SOCIALNET,family="binomial",data=d5)
 summary(m1)
 
 m1_val <- m1$null.deviance - m1$deviance
@@ -570,20 +571,20 @@ pchisq(m1_val,m1_df,lower.tail=FALSE)
 
 round(exp(cbind(OR=coef(m1),confint.default(m1))),2)[-1,,drop=FALSE]
 
-xlab <- "Jogar no Smartphone"
+xlab <- "Jogar noutros dispositivos"
 ylab <- "Preço (€)"
-tlab <- "Jogar no Smartphone vs. Preço do Smartphone (by Rede Social)"
+tlab <- "Jogar noutros dispositivos vs. Preço do Smartphone (by Rede Social)"
 ggplot(d5) +
-  geom_boxplot(aes(x=PLAY_PHONE,y=PRICE)) +
+  geom_boxplot(aes(x=PLAY_OTHER,y=PRICE)) +
   labs(x=xlab,y=ylab,title=tlab) +
   scale_x_discrete(labels=c("Não","Sim")) +
   facet_grid(~SOCIALNET)
 
 xlab <- "Preço (€)"
-ylab <- "Probabilidade de Jogar no Smartphone"
-tlab <- "Jogar no Smartphone vs. Preço do Smartphone (by Rede Social)"
+ylab <- "Probabilidade de Jogar noutros dispositivos"
+tlab <- "Jogar noutros dispositivos vs. Preço do Smartphone (by Rede Social)"
 llab <- "Rede Social"
-ggplot(d5,aes(x=PRICE,y=as.numeric(PLAY_PHONE),color=SOCIALNET)) +
+ggplot(d5,aes(x=PRICE,y=as.numeric(PLAY_OTHER),color=SOCIALNET)) +
   geom_point() +
   geom_smooth(method="glm",method.args=list(family="binomial"),se=FALSE) +
   labs(x=xlab,y=ylab,title=tlab) +
