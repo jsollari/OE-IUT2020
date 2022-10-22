@@ -2,7 +2,7 @@
 #local:      INE, Lisboa
 #Rversion:   3.6.1
 #criado:     23.01.2020
-#modificado: 18.02.2020
+#modificado: 22.10.2022
 
 setwd("2022/2022.10.13_escolas_OE-IUT2020/bin/")
 
@@ -80,7 +80,7 @@ a10_1 <- "ESCOLA.*SUPERIOR.*(EDUCAÇÃO|EDUCACÃO|EDUCAÇAO|EDUCACAO).*(SANTARÉ
 a10_2 <- "INSTITUTO.*(POLITÉCNICO|POLITECNICO).*(SANTARÉM|SANTAREM)"
 a11_1 <- "SINES"
 a11_2 <- "VASCO.*GAMA"
-a12 <- "FERREIRA.*DIAS"
+a12   <- "FERREIRA.*DIAS"
 a13_1 <- "(LUIS|LUÍS|LUIZ|LUÍZ).*FREITAS.*BRANCO"
 a13_2 <- "(ESLFB|E\\.S\\.L\\.F\\.B\\.|E\\.\\sS\\.\\sL\\.\\sF\\.\\sB\\.)"
 s1  <- grepl(a1,toupper(d2$PLACE))
@@ -112,45 +112,7 @@ d2$PLACE[s13] <- "Escola Secundária Luís Freitas Branco"
 d2$PLACE <- factor(d2$PLACE)
 
 ### 1.2.3. Reformat field GRADE
-a1 <- "(12\\D|DOZE|DÉCIMO-SEGUNDO|DECIMO-SEGUNDO|DÉCIMO\\sSEGUNDO|DECIMO\\sSEGUNDO)"
-s1 <- grepl(a1,toupper(d2$GRADE))
-d2$GRADE[s1] <- 12
-a1 <- "(11\\D|ONZE|DÉCIMO-PRIMEIRO|DECIMO-PRIMEIRO|DÉCIMO\\sPRIMEIRO|DECIMO\\sPRIMEIRO)"
-s1 <- grepl(a1,toupper(d2$GRADE))
-d2$GRADE[s1] <- 11
-a1 <- "(10\\D|DEZ|DÉCIMO|DECIMO)"
-s1 <- grepl(a1,toupper(d2$GRADE))
-d2$GRADE[s1] <- 10
-a1 <- "(9\\D|NOVE|NONO)"
-s1 <- grepl(a1,toupper(d2$GRADE))
-d2$GRADE[s1] <- 9
-a1 <- "(8\\D|OITO|OITAVO)"
-s1 <- grepl(a1,toupper(d2$GRADE))
-d2$GRADE[s1] <- 8
-a1 <- "(7\\D|SETE|SÉTIMO|SETIMO)"
-s1 <- grepl(a1,toupper(d2$GRADE))
-d2$GRADE[s1] <- 7
-a1 <- "(6\\D|SEIS|SEXTO)"
-s1 <- grepl(a1,toupper(d2$GRADE))
-d2$GRADE[s1] <- 6
-a1 <- "(5\\D|CINCO|QUINTO)"
-s1 <- grepl(a1,toupper(d2$GRADE))
-d2$GRADE[s1] <- 5
-a1 <- "(4\\D|QUATRO|QUARTO)"
-s1 <- grepl(a1,toupper(d2$GRADE))
-d2$GRADE[s1] <- 4
-a1 <- "(3\\D|TRÊS|TERCEIRO)"
-s1 <- grepl(a1,toupper(d2$GRADE))
-d2$GRADE[s1] <- 3
-a1 <- "(2\\D|DOIS|SEGUNDO)"
-s1 <- grepl(a1,toupper(d2$GRADE))
-d2$GRADE[s1] <- 2
-a1 <- "(1\\D|UM|PRIMEIRO)"
-s1 <- grepl(a1,toupper(d2$GRADE))
-d2$GRADE[s1] <- 1
-a1 <- "(PROFESSOR|PROFESSORA|PROF)"
-s1 <- grepl(a1,toupper(d2$GRADE))
-d2$GRADE[s1] <- "Professor"
+d2$GRADE <- gsub("ºAno","",d2$GRADE)
 d2$GRADE <- factor(d2$GRADE,levels=c(1:12,"Professor"))
 
 ### 1.2.4. Reformat field SMARTPHONE_YN
@@ -172,34 +134,34 @@ d2$AGE_FIRST <- as.numeric(gsub(a1,"",toupper(d2$AGE_FIRST)))
 
 ### 1.2.8. Reformat field COLOUR
 a1 <- "(PRATEADO|PRATEADA|SILVER)"
+a2 <- "(DOURADO|DOURADA|GOLD)"
+a3 <- "(BRANCO|BRANCA|WHITE)"
+a4 <- "(PRETO|PRETA|BLACK)"
+a5 <- "(CINZENTO|CINZENTA|CINZA|GREY|GRAY)"
+a6 <- "(AZUL|BLUE)"
+a7 <- "(VERMELHO|VERMALHO|VERMELHA|VERMALHA|ENCARNADO|ENCARNADA|RED)"
+a8 <- "(ROSA|ROSE)"
 s1 <- grepl(a1,toupper(d2$COLOUR))
+s2 <- grepl(a2,toupper(d2$COLOUR))
+s3 <- grepl(a3,toupper(d2$COLOUR))
+s4 <- grepl(a4,toupper(d2$COLOUR))
+s5 <- grepl(a5,toupper(d2$COLOUR))
+s6 <- grepl(a6,toupper(d2$COLOUR))
+s7 <- grepl(a7,toupper(d2$COLOUR))
+s8 <- grepl(a8,toupper(d2$COLOUR))
 d2$COLOUR[s1] <- "Prateado"
-a1 <- "(DOURADO|DOURADA|GOLD)"
-s1 <- grepl(a1,toupper(d2$COLOUR))
-d2$COLOUR[s1] <- "Dourado"
-a1 <- "(BRANCO|BRANCA|WHITE)"
-s1 <- grepl(a1,toupper(d2$COLOUR))
-d2$COLOUR[s1] <- "Branco"
-a1 <- "(PRETO|PRETA|BLACK)"
-s1 <- grepl(a1,toupper(d2$COLOUR))
-d2$COLOUR[s1] <- "Preto"
-a1 <- "(CINZENTO|CINZENTA|CINZA|GREY|GRAY)"
-s1 <- grepl(a1,toupper(d2$COLOUR))
-d2$COLOUR[s1] <- "Cinzento"
-a1 <- "(AZUL|BLUE)"
-s1 <- grepl(a1,toupper(d2$COLOUR))
-d2$COLOUR[s1] <- "Azul"
-a1 <- "(VERMELHO|VERMALHO|VERMELHA|VERMALHA|ENCARNADO|ENCARNADA|RED)"
-s1 <- grepl(a1,toupper(d2$COLOUR))
-d2$COLOUR[s1] <- "Vermelho"
-a1 <- "(ROSA|ROSE)"
-s1 <- grepl(a1,toupper(d2$COLOUR))
-d2$COLOUR[s1] <- "Rosa"
-d2$COLOUR <- ifelse(d2$COLOUR %in% c("Prateado","Dourado","Branco",
-  "Preto","Cinzento","Azul","Vermelho","Rosa"),d2$COLOUR,
+d2$COLOUR[s2] <- "Dourado"
+d2$COLOUR[s3] <- "Branco"
+d2$COLOUR[s4] <- "Preto"
+d2$COLOUR[s5] <- "Cinzento"
+d2$COLOUR[s6] <- "Azul"
+d2$COLOUR[s7] <- "Vermelho"
+d2$COLOUR[s8] <- "Rosa"
+d2$COLOUR <- ifelse(d2$COLOUR %in% c("Prateado","Dourado","Branco","Preto",
+  "Cinzento","Azul","Vermelho","Rosa"),d2$COLOUR,
              ifelse(!is.na(d2$COLOUR),"Outra",NA))
-d2$COLOUR <- factor(d2$COLOUR,levels=c("Prateado","Dourado","Branco",
-  "Preto","Cinzento","Azul","Vermelho","Rosa","Outra"))
+d2$COLOUR <- factor(d2$COLOUR,levels=c("Prateado","Dourado","Branco","Preto",
+  "Cinzento","Azul","Vermelho","Rosa","Outra"))
 
 ### 1.2.9. Reformat field PRICE_YN
 d2$PRICE_YN <- ifelse(d2$PRICE_YN=="Sim",TRUE,
@@ -219,20 +181,20 @@ a1 <- "(\\s|CERCA DE|NO MAXIMO|NO MÁXIMO|MAXIMO|MÁXIMO|ATÉ|ATE|MENOS DE|OU ME
 d2$PRICE_NEW <- as.numeric(gsub(a1,"",toupper(d2$PRICE_NEW)))
 
 ### 1.2.12. Reformat field SOCIALNET
-a1 <- "(WHATSAPP|WPP|WATSAPP|WHATZAP|WATS APP|WHATSHAPP)"
-s1 <- grepl(a1,toupper(d2$SOCIALNET))
-d2$SOCIALNET[s1] <- "Whatsapp"
 a1 <- "YOUTUBE"
+a2 <- "(REDDIT|REDIT)"
+a3 <- "TIKTOK"
 s1 <- grepl(a1,toupper(d2$SOCIALNET))
+s2 <- grepl(a2,toupper(d2$SOCIALNET))
+s3 <- grepl(a3,toupper(d2$SOCIALNET))
 d2$SOCIALNET[s1] <- "Youtube"
-a1 <- "(REDDIT|REDIT)"
-s1 <- grepl(a1,toupper(d2$SOCIALNET))
-d2$SOCIALNET[s1] <- "Reddit"
-d2$SOCIALNET <- ifelse(d2$SOCIALNET %in% c("Instagram","Snapchat","Facebook",
-  "Twitter","Pinterest","Whatsapp","Youtube","Reddit","Nenhuma"),d2$SOCIALNET,
+d2$SOCIALNET[s2] <- "Reddit"
+d2$SOCIALNET[s3] <- "TikTok"
+d2$SOCIALNET <- ifelse(d2$SOCIALNET %in% c("WhatsApp","Instagram","Snapchat",
+  "Twitter","Facebook","Youtube","Reddit","TikTok","Nenhuma"),d2$SOCIALNET,
                 ifelse(!is.na(d2$SOCIALNET),"Outra",NA))
-d2$SOCIALNET <- factor(d2$SOCIALNET,levels=c("Instagram","Snapchat","Facebook",
-  "Twitter","Pinterest","Whatsapp","Youtube","Reddit","Nenhuma","Outra"))
+d2$SOCIALNET <- factor(d2$SOCIALNET,levels=c("WhatsApp","Instagram","Snapchat",
+  "Twitter","Facebook","Youtube","Reddit","TikTok","Outra","Nenhuma"))
 
 ### 1.2.13. Reformat field PLAY_PHONE
 d2$PLAY_PHONE <- ifelse(d2$PLAY_PHONE=="Sim",TRUE,
@@ -299,8 +261,6 @@ if(sum(s1) > 0){
 ## 1.4. MANUAL CHECKS
 summary(d2,maxsum=15)
 
-s1 <- d2$GRADE == "Outro"
-cbind(d1$GRADE,as.character(d2$GRADE))[s1,]         #1. GRADE = "Outro"
 s1 <- d2$ACQUIRED == "Outro"
 cbind(d1$ACQUIRED,as.character(d2$ACQUIRED))[s1,]   #1. ACQUIRED = "Outro"
 s1 <- is.na(d2$AGE_FIRST)
