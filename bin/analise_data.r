@@ -2,9 +2,9 @@
 #local:      INE, Lisboa
 #Rversion:   3.6.1
 #criado:     23.01.2020
-#modificado: 22.10.2022
+#modificado: 24.10.2022
 
-setwd("2022/2022.10.13_escolas_OE-IUT2020/bin/")
+setwd("2022/2022.11.22_escolas_OE-IUT2020/bin/")
 
 library("ggplot2")
 
@@ -29,7 +29,7 @@ library("ggplot2")
 # 1. DATA WRANGLING
 {
 ## 1.1. READ RAW DATA
-f1 <- "../data/dataraw_20221022.csv"
+f1 <- "../data/dataraw_20221122.csv"
 d1 <- read.table(
   file=f1,
   header=FALSE,
@@ -83,6 +83,8 @@ a11_2 <- "VASCO.*GAMA"
 a12   <- "FERREIRA.*DIAS"
 a13_1 <- "(LUIS|LUÍS|LUIZ|LUÍZ).*FREITAS.*BRANCO"
 a13_2 <- "(ESLFB|E\\.S\\.L\\.F\\.B\\.|E\\.\\sS\\.\\sL\\.\\sF\\.\\sB\\.)"
+a14_1 <- "INSTITUTO.*(EDUCACAO.*|)DESENVOLVIMENTO.*PROFISSIONAL"
+a14_2 <- "(IEDP|I\\.E\\.D\\.P\\.|I\\.\\sE\\.\\sD\\.\\sP\\.)"
 s1  <- grepl(a1,toupper(d2$PLACE))
 s2  <- grepl(a2,toupper(d2$PLACE))
 s3  <- grepl(a3_1,toupper(d2$PLACE)) | grepl(a3_2,toupper(d2$PLACE))
@@ -96,6 +98,7 @@ s10 <- grepl(a10_1,toupper(d2$PLACE)) | grepl(a10_2,toupper(d2$PLACE))
 s11 <- grepl(a11_1,toupper(d2$PLACE)) | grepl(a11_2,toupper(d2$PLACE))
 s12 <- grepl(a12,toupper(d2$PLACE))
 s13 <- grepl(a13_1,toupper(d2$PLACE)) | grepl(a13_2,toupper(d2$PLACE))
+s14 <- grepl(a14_1,toupper(d2$PLACE)) | grepl(a14_2,toupper(d2$PLACE))
 d2$PLACE[s1]  <- "Escola Secundária Poeta Al Berto"
 d2$PLACE[s2]  <- "Escola Secundária Quinta do Marquês"
 d2$PLACE[s3]  <- "Instituto para o Desenvolvimento Social"
@@ -109,6 +112,7 @@ d2$PLACE[s10] <- "Escola Superior de Educação de Santarém"
 d2$PLACE[s11] <- "Escola Básica Vasco da Gama de Sines"
 d2$PLACE[s12] <- "Escola Secundária Ferreira Dias"
 d2$PLACE[s13] <- "Escola Secundária Luís Freitas Branco"
+d2$PLACE[s14] <- "Instituto de Educação e Desenvolvimento Profissional"
 d2$PLACE <- factor(d2$PLACE)
 
 ### 1.2.3. Reformat field GRADE
@@ -140,7 +144,7 @@ a4 <- "(PRETO|PRETA|BLACK)"
 a5 <- "(CINZENTO|CINZENTA|CINZA|GREY|GRAY)"
 a6 <- "(AZUL|BLUE)"
 a7 <- "(VERMELHO|VERMALHO|VERMELHA|VERMALHA|ENCARNADO|ENCARNADA|RED)"
-a8 <- "(ROSA|ROSE)"
+a8 <- "(ROSA|ROSINHA|ROSE)"
 s1 <- grepl(a1,toupper(d2$COLOUR))
 s2 <- grepl(a2,toupper(d2$COLOUR))
 s3 <- grepl(a3,toupper(d2$COLOUR))
@@ -183,7 +187,7 @@ d2$PRICE_NEW <- as.numeric(gsub(a1,"",toupper(d2$PRICE_NEW)))
 ### 1.2.12. Reformat field SOCIALNET
 a1 <- "YOUTUBE"
 a2 <- "(REDDIT|REDIT)"
-a3 <- "TIKTOK"
+a3 <- "(TIKTOK|TIK\\sTOK)"
 s1 <- grepl(a1,toupper(d2$SOCIALNET))
 s2 <- grepl(a2,toupper(d2$SOCIALNET))
 s3 <- grepl(a3,toupper(d2$SOCIALNET))
@@ -275,7 +279,7 @@ s1 <- d2$SOCIALNET == "Outra"
 cbind(d1$SOCIALNET,as.character(d2$SOCIALNET))[s1,] #6. SOCIALNET = "Outra"
 
 ## 1.4. WRITE DATA
-f2 <- "../results/data_20221022.csv"
+f2 <- "../results/data_20221122.csv"
 write.table(
   x=d2,
   file=f2,
