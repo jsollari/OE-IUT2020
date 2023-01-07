@@ -340,6 +340,7 @@ ggplot(d4) +
     "Azul"="blue",
     "Vermelho"="red",
     "Rosa"="pink",
+    "Verde"="green",
     "Outra"="darkgrey"),
     na.value="darkgrey")
 
@@ -475,33 +476,35 @@ summary(m1)
 xlab <- "Preço (€)"
 ylab <- "Preço disposto a pagar (€)"
 tlab <- "Preço vs. Preço disposto a pagar"
+set.seed(12345)
 ggplot(d5,aes(x=PRICE,y=PRICE_NEW)) +
-  geom_point() +
+  geom_jitter(width=10,height=10) +
   geom_abline(aes(intercept=0,slope=1),linetype="dashed") +
   geom_smooth(method="lm",se=FALSE) +
   labs(x=xlab,y=ylab,title=tlab)
 
-## 3.2. PRICE_NEW ~ PRICE + PLAY_OTHER [Multiple linear regression]
+## 3.2. PRICE_NEW ~ PRICE + PLAY_PHONE [Multiple linear regression]
 d5 <- d2[d2$GRADE!="Professor" & d2$SMARTPHONE_YN & d2$PRICE_YN,]
 
-m1 <- lm(PRICE_NEW ~ PRICE + PLAY_OTHER,data=d5)
+m1 <- lm(PRICE_NEW ~ PRICE + PLAY_PHONE,data=d5)
 summary(m1)
 
 xlab <- "Preço Smartphone (€)"
 ylab <- "Preço disposto a pagar (€)"
 tlab <- "Preço vs. Preço disposto a pagar (by Jogar)"
 llab <- "Jogar"
-ggplot(d5,aes(x=PRICE,y=PRICE_NEW,color=PLAY_OTHER)) +
-  geom_point() +
+set.seed(12345)
+ggplot(d5,aes(x=PRICE,y=PRICE_NEW,color=PLAY_PHONE)) +
+  geom_jitter(shape=1,size=2,width=10,height=10) +
   geom_abline(aes(intercept=0,slope=1),linetype="dashed") +
   geom_smooth(method="lm",se=FALSE) +
   labs(x=xlab,y=ylab,title=tlab) +
   scale_color_discrete(name=llab,labels=c("Não","Sim")) 
 
-## 3.3. PLAY_OTHER ~ PRICE [Simple logistic regression]
+## 3.3. PLAY_PHONE ~ PRICE [Simple logistic regression]
 d5 <- d2[d2$GRADE!="Professor" & d2$SMARTPHONE_YN & d2$PRICE_YN,]
 
-m1 <- glm(PLAY_OTHER ~ PRICE,family="binomial",data=d5)
+m1 <- glm(PLAY_PHONE ~ PRICE,family="binomial",data=d5)
 summary(m1)
 
 m1_val <- m1$null.deviance - m1$deviance
@@ -510,29 +513,29 @@ pchisq(m1_val,m1_df,lower.tail=FALSE)
 
 round(exp(cbind(OR=coef(m1),confint.default(m1))),2)[-1,,drop=FALSE]
 
-xlab <- "Jogar noutros dispositivos"
+xlab <- "Jogar"
 ylab <- "Preço (€)"
-tlab <- "Jogar noutros dispositivos vs. Preço do Smartphone"
+tlab <- "Jogar vs. Preço do Smartphone"
 ggplot(d5) +
-  geom_boxplot(aes(x=PLAY_OTHER,y=PRICE)) +
+  geom_boxplot(aes(x=PLAY_PHONE,y=PRICE)) +
   labs(x=xlab,y=ylab,title=tlab) +
   scale_x_discrete(labels=c("Não","Sim"))
 
 xlab <- "Preço (€)"
-ylab <- "Probabilidade de Jogar noutros dispositivos"
-tlab <- "Jogar noutros dispositivos vs. Preço do Smartphone"
-ggplot(d5,aes(x=PRICE,y=as.numeric(PLAY_OTHER))) +
+ylab <- "Probabilidade de Jogar"
+tlab <- "Jogar vs. Preço do Smartphone"
+ggplot(d5,aes(x=PRICE,y=as.numeric(PLAY_PHONE))) +
   geom_point() +
   geom_smooth(method="glm",method.args=list(family="binomial"),se=FALSE) +
   labs(x=xlab,y=ylab,title=tlab)
 
-## 3.4. PLAY_OTHER ~ PRICE + SOCIALNET [Multiple logistic regression]
+## 3.4. PLAY_PHONE ~ PRICE + SOCIALNET [Multiple logistic regression]
 d5 <- d2[d2$GRADE!="Professor" & d2$SMARTPHONE_YN & d2$PRICE_YN,]
-t1 <- table(d5$SOCIALNET,d5$PLAY_OTHER)
+t1 <- table(d5$SOCIALNET,d5$PLAY_PHONE)
 s1 <- d5$SOCIALNET %in% rownames(t1[apply(t1,1,function(x)all(x!=0)),])
 d5 <- d5[s1,]
 
-m1 <- glm(PLAY_OTHER ~ PRICE + SOCIALNET,family="binomial",data=d5)
+m1 <- glm(PLAY_PHONE ~ PRICE + SOCIALNET,family="binomial",data=d5)
 summary(m1)
 
 m1_val <- m1$null.deviance - m1$deviance
@@ -541,21 +544,22 @@ pchisq(m1_val,m1_df,lower.tail=FALSE)
 
 round(exp(cbind(OR=coef(m1),confint.default(m1))),2)[-1,,drop=FALSE]
 
-xlab <- "Jogar noutros dispositivos"
+xlab <- "Jogar"
 ylab <- "Preço (€)"
-tlab <- "Jogar noutros dispositivos vs. Preço do Smartphone (by Rede Social)"
+tlab <- "Jogar vs. Preço do Smartphone (by Rede Social)"
 ggplot(d5) +
-  geom_boxplot(aes(x=PLAY_OTHER,y=PRICE)) +
+  geom_boxplot(aes(x=PLAY_PHONE,y=PRICE)) +
   labs(x=xlab,y=ylab,title=tlab) +
   scale_x_discrete(labels=c("Não","Sim")) +
   facet_grid(~SOCIALNET)
 
 xlab <- "Preço (€)"
-ylab <- "Probabilidade de Jogar noutros dispositivos"
-tlab <- "Jogar noutros dispositivos vs. Preço do Smartphone (by Rede Social)"
+ylab <- "Probabilidade de Jogar"
+tlab <- "Jogar vs. Preço do Smartphone (by Rede Social)"
 llab <- "Rede Social"
-ggplot(d5,aes(x=PRICE,y=as.numeric(PLAY_OTHER),color=SOCIALNET)) +
-  geom_point() +
+set.seed(12345)
+ggplot(d5,aes(x=PRICE,y=as.numeric(PLAY_PHONE),color=SOCIALNET)) +
+  geom_jitter(shape=1,size=2,width=20,height=0) +
   geom_smooth(method="glm",method.args=list(family="binomial"),se=FALSE) +
   labs(x=xlab,y=ylab,title=tlab) +
   scale_color_discrete(name=llab)
