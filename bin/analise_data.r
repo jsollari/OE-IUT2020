@@ -29,7 +29,7 @@ library("ggplot2")
 # 1. DATA WRANGLING
 {
 ## 1.1. READ RAW DATA
-f1 <- "../data/dataraw_20230106.mod.csv"
+f1 <- "../data/datamod_20230106.csv"
 d1 <- read.table(
   file=f1,
   header=FALSE,
