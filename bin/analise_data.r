@@ -1,12 +1,13 @@
 #autor:      Joao Sollari Lopes
 #local:      INE, Lisboa
-#Rversion:   3.6.1
+#Rversion:   4.1.1
 #criado:     23.01.2020
-#modificado: 06.01.2023
+#modificado: 08.02.2023
 
-setwd("2023/2023.01.06_escolas_OE-IUT2020/bin/")
+setwd("2023/2023.02.08_escolas_OE-IUT2020/bin/")
 
 library("ggplot2")
+library("gridExtra")
 
 #0. INDEX
 {
@@ -29,7 +30,7 @@ library("ggplot2")
 # 1. DATA WRANGLING
 {
 ## 1.1. READ RAW DATA
-f1 <- "../data/datamod_20230106.csv"
+f1 <- "../data/datamod_20230208.csv"
 d1 <- read.table(
   file=f1,
   header=FALSE,
@@ -86,6 +87,7 @@ a13_2 <- "(ESLFB|E\\.S\\.L\\.F\\.B\\.|E\\.\\sS\\.\\sL\\.\\sF\\.\\sB\\.)"
 a14_1 <- "INSTITUTO.*(EDUCACAO.*|)DESENVOLVIMENTO.*PROFISSIONAL"
 a14_2 <- "(IEDP|I\\.E\\.D\\.P\\.|I\\.\\sE\\.\\sD\\.\\sP\\.)"
 a15   <- "BAIXO.*BARROSO"
+a16   <- "BATALHA"
 s1  <- grepl(a1,toupper(d2$PLACE))
 s2  <- grepl(a2,toupper(d2$PLACE))
 s3  <- grepl(a3_1,toupper(d2$PLACE)) | grepl(a3_2,toupper(d2$PLACE))
@@ -101,6 +103,7 @@ s12 <- grepl(a12,toupper(d2$PLACE))
 s13 <- grepl(a13_1,toupper(d2$PLACE)) | grepl(a13_2,toupper(d2$PLACE))
 s14 <- grepl(a14_1,toupper(d2$PLACE)) | grepl(a14_2,toupper(d2$PLACE))
 s15 <- grepl(a15,toupper(d2$PLACE))
+s16 <- grepl(a16,toupper(d2$PLACE))
 d2$PLACE[s1]  <- "Escola Secundária Poeta Al Berto"
 d2$PLACE[s2]  <- "Escola Secundária Quinta do Marquês"
 d2$PLACE[s3]  <- "Instituto para o Desenvolvimento Social"
@@ -116,6 +119,7 @@ d2$PLACE[s12] <- "Escola Secundária Ferreira Dias"
 d2$PLACE[s13] <- "Escola Secundária Luís Freitas Branco"
 d2$PLACE[s14] <- "Instituto de Educação e Desenvolvimento Profissional"
 d2$PLACE[s15] <- "Escola Básica e Secundária Baixo Barroso"
+d2$PLACE[s16] <- "Agrupamento de Escolas da Batalha"
 d2$PLACE <- factor(d2$PLACE)
 
 ### 1.2.3. Reformat field GRADE
@@ -179,15 +183,15 @@ d2$PRICE_YN <- ifelse(d2$PRICE_YN=="Sim",TRUE,
 
 ### 1.2.10. Reformat field PRICE
 d2$PRICE <- gsub(",",".",d2$PRICE)
-a1 <- "\\s|€|EUROS"
+a1 <- "\\s|\\+[\\/\\s]\\-|€|EUROS"
 d2$PRICE <- as.numeric(gsub(a1,"",toupper(d2$PRICE)))
 
 ### 1.2.11. Reformat field PRICE_NEW
-a1 <- "(NADA|NAO|NÃO|ZERO|^0$)"
+a1 <- "(^NADA$|^NAO$|^NÃO$|^ZERO$|^0$)"
 s1 <- grepl(a1,toupper(d2$PRICE_NEW))
 d2$PRICE_NEW[s1] <- NA
 d2$PRICE_NEW <- gsub(",",".",d2$PRICE_NEW)
-a1 <- "(\\s|CERCA DE|NO MAXIMO|NO MÁXIMO|MAXIMO|MÁXIMO|ATÉ|ATE|MENOS DE|OU MENOS|MENOS|€|EUROS)"
+a1 <- "(\\s|\\+[\\/\\s]\\-|CERCA DE|NO MAXIMO|NO MÁXIMO|MAXIMO|MÁXIMO|ATÉ|ATE|MENOS DE|OU MENOS|MENOS|NÃO MAIS DO QUE|€|EUROS)"
 d2$PRICE_NEW <- as.numeric(gsub(a1,"",toupper(d2$PRICE_NEW)))
 
 ### 1.2.12. Reformat field SOCIALNET
@@ -285,10 +289,10 @@ s1 <- d2$SOCIALNET == "Outra"
 cbind(d1$SOCIALNET,as.character(d2$SOCIALNET))[s1,] #6. SOCIALNET = "Outra"
 
 ## 1.4. WRITE DATA
-f2 <- "../results/data_20230106.csv"
+f1 <- "../results/data_20230208.csv"
 write.table(
   x=d2,
-  file=f2,
+  file=f1,
   sep=",",
   row.names=FALSE,
   col.names=TRUE,
@@ -303,32 +307,39 @@ d4 <- d2[d2$GRADE!="Professor" & d2$SMARTPHONE_YN,]
 ## 2.1. VISUALIZATION
 
 ### 2.1.1. SMARTPHONE_YN (Pie chart)
+f1 <- "../media/1.piechart.tif"
 tlab <- "Tem Smartphone?"
 slab <- gsub("TRUE","Sim",gsub("FALSE","Não",sort(unique(d3$SMARTPHONE))))
-ggplot(d3) +
+p1 <- ggplot(d3) +
   geom_bar(aes(x=factor(1),fill=SMARTPHONE_YN)) +
   coord_polar("y",start=0) +
   labs(x="",y="",title=tlab) +
   scale_fill_discrete(name="",labels=slab) +
   scale_x_discrete(breaks=NULL,labels=NULL)
+ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
   
 ### 2.1.2. ACQUIRED (Barplot)
+f1 <- "../media/2.barplot_simple.tif"
 ylab <- "Frequência"
 tlab <- "Aquisição do Smartphone"
-ggplot(d4) +
+p1 <- ggplot(d4) +
   geom_bar(aes(x=ACQUIRED),show.legend=FALSE) +
   labs(x="",y=ylab,title=tlab)
+ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
 
 ### 2.1.3. AGE_FIRST (Frequency table)
+f1 <- "../media/3.cumtab.csv"
 d5 <- d2[d2$GRADE!="Professor" & d2$SMARTPHONE_YN & d2$AGE_FIRST_YN,]
 t1 <- table(d5$AGE_FIRST)
 t2 <- prop.table(t1)
-cbind(Freq=t1,Cumul=cumsum(t1),Rel=round(t2,2),RelCumul=round(cumsum(t2),2))
+t3 <- cbind(Freq=t1,Cumul=cumsum(t1),Rel=round(t2,2),RelCumul=round(cumsum(t2),2))
+write.table(x=t3,file=f1,sep=",",col.names=NA,fileEncoding="UTF-8")
 
 ### 2.1.4. COLOUR (Colored barplot)
+f1 <- "../media/4.barplot_colored.tif"
 ylab <- "Frequência"
 tlab <- "Cor do Smartphone"
-ggplot(d4) +
+p1 <- ggplot(d4) +
   geom_bar(aes(x=COLOUR,fill=COLOUR),show.legend=FALSE) +
   labs(x="",y=ylab,title=tlab) +
   scale_fill_manual("legend",values=c(
@@ -343,78 +354,87 @@ ggplot(d4) +
     "Verde"="green",
     "Outra"="darkgrey"),
     na.value="darkgrey")
+ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
 
 ### 2.1.5. PRICE (Boxplot)
 d5 <- d2[d2$GRADE!="Professor" & d2$SMARTPHONE_YN & d2$PRICE_YN,]
+
+f1 <- "../media/5.boxplot_simple.tif"
 ylab <- "Preço (€)"
 tlab <- "Preço do Smartphone"
-ggplot(d5) +
+p1 <- ggplot(d5) +
   geom_boxplot(aes(x=factor(1),y=PRICE)) +
   labs(x="",y=ylab,title=tlab) + 
   scale_x_discrete(breaks=NULL,labels=NULL)
+ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
 
 ### 2.1.6. PRICE_NEW (Histogram)
+f1 <- "../media/6.histogram.tif"
 xlab <- "Preço (€)"
 ylab <- "Frequência"
 tlab <-  "Preço disposto a pagar por Smartphone"
-ggplot(d4) +
+p1 <- ggplot(d4) +
   geom_histogram(aes(x=PRICE_NEW),binwidth=200) +
   labs(x=xlab,y=ylab,title=tlab)
+ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
 
 ### 2.1.7. SOCIALNET vs PLAY_PHONE (Clustered barplot)
+f1 <- "../media/7.barplot_clustered.tif"
 xlab <- "Rede Social"
 ylab <- "Frequência"
 tlab <- "Rede social mais usada vs. Jogar no Smartphone"
 llab <- "Jogar"
-ggplot(d4) +
+p1 <- ggplot(d4) +
   geom_bar(aes(x=SOCIALNET,fill=PLAY_PHONE),position="dodge") +
   labs(x=xlab,y=ylab,title=tlab) +
   scale_fill_discrete(name=llab,labels=c("Não","Sim")) 
+ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
 
 ### 2.1.8. PLAY_OTHER vs PLAY_PHONE (Counts plot)
+f1 <- "../media/8.countplot.tif"
 xlab <- "Jogar no Smartphone"
 ylab <- "Jogar noutro dispositivo"
 tlab <- "Jogar no Smartphone vs. Jogar noutro dispositivo"
-ggplot(d4) +
+p1 <- ggplot(d4) +
   geom_count(mapping=aes(x=PLAY_PHONE,y=PLAY_OTHER)) + 
   labs(x=xlab,y=ylab,title=tlab) +
   scale_x_discrete(labels=c("Não","Sim")) +
   scale_y_discrete(labels=c("Não","Sim"))
+ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
 
 ### 2.1.9. SATISFACTION vs PRICE (Stacked barplot)
 d5 <- d2[d2$GRADE!="Professor" & d2$SMARTPHONE_YN & d2$PRICE_YN,]
 d5$PRICE_CAT <- cut(d5$PRICE,breaks=5,dig.lab=4)
 
+f1 <- "../media/9.barplot_stacked.tif"
 xlab <- "Satisfação [(Muito baixo) 1 - 5 (Muito alto)]"
 ylab <- "Frequência"
 tlab <- "Grau de satisfação com o Smartphone"
 llab <- "Preço (€)"
-ggplot(d5) +
+p1 <- ggplot(d5) +
   geom_bar(aes(x=SATISFACTION,fill=PRICE_CAT),position="stack") +
   labs(x=xlab,y=ylab,title=tlab) +
   scale_fill_discrete(name=llab) 
+ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
 
 ## 2.2. SUMMARY STATISTICS
 
 ### 2.2.1. AGE_FIRST
 d5 <- d2[d2$GRADE!="Professor" & d2$SMARTPHONE_YN & d2$AGE_FIRST_YN,]
 d5 <- d5[!is.na(d5$AGE_FIRST),]
-
-rbind(
-  Mean=round(mean(d5$AGE_FIRST),2),     #mean
-  Median=median(d5$AGE_FIRST),          #median
-  Mode=as.numeric(names(which.max(table(d5$AGE_FIRST))))) #mode
-
-rbind(
-  StDev=round(sd(d5$AGE_FIRST),2),      #standard deviation
-  IQR=IQR(d5$AGE_FIRST),                #interquantil range
-  Range=max(d5$AGE_FIRST)-min(d5$AGE_FIRST)) #range
-
+v1 <- c(
+  Mean=round(mean(d5$AGE_FIRST),2),                       #mean
+  Median=median(d5$AGE_FIRST),                            #median
+  Mode=as.numeric(names(which.max(table(d5$AGE_FIRST)))), #mode
+  StDev=round(sd(d5$AGE_FIRST),2),                        #standard deviation
+  IQR=IQR(d5$AGE_FIRST),                                  #interquantil range
+  Range=max(d5$AGE_FIRST) - min(d5$AGE_FIRST)             #range
+)
 d5$AGE_FIRST_STD <- (d5$AGE_FIRST - mean(d5$AGE_FIRST))/sd(d5$AGE_FIRST)
 xlab <- "Idade quando obteve primeiro Smartphone"
 ylab <- "Densidade"
 tlab <- "Comparação com distribuição Gaussiana"
-ggplot(d5) +
+p1 <- ggplot(d5) +
   geom_density(aes(x=AGE_FIRST_STD)) +
   stat_function(fun=dnorm,color="red",args=list(mean=0,sd=1)) +
   labs(x=xlab,y=ylab,title=tlab)  
@@ -422,47 +442,49 @@ ggplot(d5) +
 ### 2.2.1. PRICE
 d5 <- d2[d2$GRADE!="Professor" & d2$SMARTPHONE_YN & d2$PRICE_YN,]
 d5 <- d5[!is.na(d5$PRICE),]
-
-rbind(
-  Mean=round(mean(d5$PRICE),2),         #mean
-  Median=median(d5$PRICE),              #median
-  Mode=as.numeric(names(which.max(table(d5$PRICE))))) #mode
-
-rbind(
-  StDev=round(sd(d5$PRICE),2),          #standard deviation
-  IQR=IQR(d5$PRICE),                    #interquantil range
-  Range=max(d5$PRICE)-min(d5$PRICE))    #range
-
+v2 <- c(
+  Mean=round(mean(d5$PRICE),2),                           #mean
+  Median=median(d5$PRICE),                                #median
+  Mode=as.numeric(names(which.max(table(d5$PRICE)))),     #mode
+  StDev=round(sd(d5$PRICE),2),                            #standard deviation
+  IQR=IQR(d5$PRICE),                                      #interquantil range
+  Range=max(d5$PRICE) - min(d5$PRICE)                     #range
+)
 d5$PRICE_STD <- (d5$PRICE - mean(d5$PRICE))/sd(d5$PRICE)
 xlab <- "Preço do Smartphone (€)"
 ylab <- "Densidade"
 tlab <- "Comparação com distribuição Gaussiana"
-ggplot(d5) +
+p2 <- ggplot(d5) +
   geom_density(aes(x=PRICE_STD)) +
   stat_function(fun=dnorm,color="red",args=list(mean=0,sd=1)) +
   labs(x=xlab,y=ylab,title=tlab)  
 
 ### 2.2.1. PRICE_NEW
 d5 <- d4[!is.na(d4$PRICE_NEW),]
-
-rbind(
-  Mean=round(mean(d5$PRICE_NEW),2),     #mean
-  Median=median(d5$PRICE_NEW),          #median
-  Mode=as.numeric(names(which.max(table(d5$PRICE_NEW))))) #mode
-
-rbind(
-  StDev=round(sd(d5$PRICE_NEW),2),      #standard deviation
-  IQR=IQR(d5$PRICE_NEW),                #interquantil range
-  Range=max(d5$PRICE_NEW)-min(d5$PRICE_NEW)) #range
-
+v3 <- c(
+  Mean=round(mean(d5$PRICE_NEW),2),                       #mean
+  Median=median(d5$PRICE_NEW),                            #median
+  Mode=as.numeric(names(which.max(table(d5$PRICE_NEW)))), #mode
+  StDev=round(sd(d5$PRICE_NEW),2),                        #standard deviation
+  IQR=IQR(d5$PRICE_NEW),                                  #interquantil range
+  Range=max(d5$PRICE_NEW)-min(d5$PRICE_NEW)               #range
+)
 d5$PRICE_NEW_STD <- (d5$PRICE_NEW - mean(d5$PRICE_NEW))/sd(d5$PRICE_NEW)
 xlab <- "Preço disposto a pagar por Smartphone (€)"
 ylab <- "Densidade"
 tlab <- "Comparação com distribuição Gaussiana"
-ggplot(d5) +
+p3 <- ggplot(d5) +
   geom_density(aes(x=PRICE_NEW_STD)) +
   stat_function(fun=dnorm,color="red",args=list(mean=0,sd=1)) +
   labs(x=xlab,y=ylab,title=tlab)  
+
+f1 <- "../media/10.summtab.csv"
+t1 <- rbind(AGE_FIRST=v1,PRICE=v2,PRICE_NEW=v3)
+write.table(x=t1,file=f1,sep=",",col.names=NA,fileEncoding="UTF-8")
+
+f1 <- "../media/11.densityplot.tif"
+p4 <- grid.arrange(p1,p2,p3,nrow=1)
+ggsave(f1,p4,"tiff",width=21,height=7,units="in",dpi=300,compression="lzw")
 
 }
 # 3. MODEL DATA
@@ -470,64 +492,75 @@ ggplot(d5) +
 ## 3.1. PRICE_NEW ~ PRICE [Simple linear regression]
 d5 <- d2[d2$GRADE!="Professor" & d2$SMARTPHONE_YN & d2$PRICE_YN,]
 
+f1 <- "../media/12.lmtab_simple.txt"
 m1 <- lm(PRICE_NEW ~ PRICE,data=d5)
-summary(m1)
+capture.output(summary(m1),file=f1)
 
+f1 <- "../media/13.linear_regression_simple.tif"
 xlab <- "Preço (€)"
 ylab <- "Preço disposto a pagar (€)"
 tlab <- "Preço vs. Preço disposto a pagar"
 set.seed(12345)
-ggplot(d5,aes(x=PRICE,y=PRICE_NEW)) +
+p1 <- ggplot(d5,aes(x=PRICE,y=PRICE_NEW)) +
   geom_jitter(width=10,height=10) +
   geom_abline(aes(intercept=0,slope=1),linetype="dashed") +
   geom_smooth(method="lm",se=FALSE) +
   labs(x=xlab,y=ylab,title=tlab)
+ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
 
 ## 3.2. PRICE_NEW ~ PRICE + PLAY_PHONE [Multiple linear regression]
 d5 <- d2[d2$GRADE!="Professor" & d2$SMARTPHONE_YN & d2$PRICE_YN,]
 
+f1 <- "../media/14.lmtab_multiple.txt"
 m1 <- lm(PRICE_NEW ~ PRICE + PLAY_PHONE,data=d5)
-summary(m1)
+capture.output(summary(m1),file=f1)
 
+f1 <- "../media/15.linear_regression_multiple.tif"
 xlab <- "Preço Smartphone (€)"
 ylab <- "Preço disposto a pagar (€)"
 tlab <- "Preço vs. Preço disposto a pagar (by Jogar)"
 llab <- "Jogar"
 set.seed(12345)
-ggplot(d5,aes(x=PRICE,y=PRICE_NEW,color=PLAY_PHONE)) +
+p1 <- ggplot(d5,aes(x=PRICE,y=PRICE_NEW,color=PLAY_PHONE)) +
   geom_jitter(shape=1,size=2,width=10,height=10) +
   geom_abline(aes(intercept=0,slope=1),linetype="dashed") +
   geom_smooth(method="lm",se=FALSE) +
   labs(x=xlab,y=ylab,title=tlab) +
   scale_color_discrete(name=llab,labels=c("Não","Sim")) 
+ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
 
 ## 3.3. PLAY_PHONE ~ PRICE [Simple logistic regression]
 d5 <- d2[d2$GRADE!="Professor" & d2$SMARTPHONE_YN & d2$PRICE_YN,]
 
+f1 <- "../media/16.glmtab_simple.txt"
 m1 <- glm(PLAY_PHONE ~ PRICE,family="binomial",data=d5)
-summary(m1)
-
 m1_val <- m1$null.deviance - m1$deviance
 m1_df <- m1$df.null - m1$df.residual
-pchisq(m1_val,m1_df,lower.tail=FALSE)
+m1_pc <- pchisq(m1_val,m1_df,lower.tail=FALSE)
+m1_or <- round(exp(cbind(OR=coef(m1),confint.default(m1))),2)[-1,,drop=FALSE]
+capture.output(summary(m1),file=f1)
+capture.output(m1_pc,file=f1,append=TRUE)
+capture.output(m1_or,file=f1,append=TRUE)
 
-round(exp(cbind(OR=coef(m1),confint.default(m1))),2)[-1,,drop=FALSE]
-
+f1 <- "../media/17.boxplot_simple.tif"
 xlab <- "Jogar"
 ylab <- "Preço (€)"
 tlab <- "Jogar vs. Preço do Smartphone"
-ggplot(d5) +
+p1 <- ggplot(d5) +
   geom_boxplot(aes(x=PLAY_PHONE,y=PRICE)) +
   labs(x=xlab,y=ylab,title=tlab) +
   scale_x_discrete(labels=c("Não","Sim"))
+ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
 
+f1 <- "../media/18.logistic_regression_simple.tif"
 xlab <- "Preço (€)"
 ylab <- "Probabilidade de Jogar"
 tlab <- "Jogar vs. Preço do Smartphone"
-ggplot(d5,aes(x=PRICE,y=as.numeric(PLAY_PHONE))) +
+p1 <- ggplot(d5,aes(x=PRICE,y=as.numeric(PLAY_PHONE))) +
   geom_point() +
   geom_smooth(method="glm",method.args=list(family="binomial"),se=FALSE) +
   labs(x=xlab,y=ylab,title=tlab)
+ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
 
 ## 3.4. PLAY_PHONE ~ PRICE + SOCIALNET [Multiple logistic regression]
 d5 <- d2[d2$GRADE!="Professor" & d2$SMARTPHONE_YN & d2$PRICE_YN,]
@@ -535,33 +568,38 @@ t1 <- table(d5$SOCIALNET,d5$PLAY_PHONE)
 s1 <- d5$SOCIALNET %in% rownames(t1[apply(t1,1,function(x)all(x!=0)),])
 d5 <- d5[s1,]
 
+f1 <- "../media/19.glmtab_multiple.txt"
 m1 <- glm(PLAY_PHONE ~ PRICE + SOCIALNET,family="binomial",data=d5)
-summary(m1)
-
 m1_val <- m1$null.deviance - m1$deviance
 m1_df <- m1$df.null - m1$df.residual
-pchisq(m1_val,m1_df,lower.tail=FALSE)
+m1_pc <- pchisq(m1_val,m1_df,lower.tail=FALSE)
+m1_or <- round(exp(cbind(OR=coef(m1),confint.default(m1))),2)[-1,,drop=FALSE]
+capture.output(summary(m1),file=f1)
+capture.output(m1_pc,file=f1,append=TRUE)
+capture.output(m1_or,file=f1,append=TRUE)
 
-round(exp(cbind(OR=coef(m1),confint.default(m1))),2)[-1,,drop=FALSE]
-
+f1 <- "../media/20.boxplot_multiple.tif"
 xlab <- "Jogar"
 ylab <- "Preço (€)"
 tlab <- "Jogar vs. Preço do Smartphone (by Rede Social)"
-ggplot(d5) +
+p1 <- ggplot(d5) +
   geom_boxplot(aes(x=PLAY_PHONE,y=PRICE)) +
   labs(x=xlab,y=ylab,title=tlab) +
   scale_x_discrete(labels=c("Não","Sim")) +
   facet_grid(~SOCIALNET)
+ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
 
+f1 <- "../media/21.logistic_regression_simple.tif"
 xlab <- "Preço (€)"
 ylab <- "Probabilidade de Jogar"
 tlab <- "Jogar vs. Preço do Smartphone (by Rede Social)"
 llab <- "Rede Social"
 set.seed(12345)
-ggplot(d5,aes(x=PRICE,y=as.numeric(PLAY_PHONE),color=SOCIALNET)) +
+p1 <- ggplot(d5,aes(x=PRICE,y=as.numeric(PLAY_PHONE),color=SOCIALNET)) +
   geom_jitter(shape=1,size=2,width=20,height=0) +
   geom_smooth(method="glm",method.args=list(family="binomial"),se=FALSE) +
   labs(x=xlab,y=ylab,title=tlab) +
   scale_color_discrete(name=llab)
+ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
 
 }
