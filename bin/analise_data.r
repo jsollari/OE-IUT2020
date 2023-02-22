@@ -2,9 +2,9 @@
 #local:      INE, Lisboa
 #Rversion:   4.1.1
 #criado:     23.01.2020
-#modificado: 08.02.2023
+#modificado: 17.02.2023
 
-setwd("2023/2023.02.08_escolas_OE-IUT2020/bin/")
+setwd("2023/2023.02.17_escolas_OE-IUT2020/bin/")
 
 library("ggplot2")
 library("gridExtra")
@@ -30,7 +30,7 @@ library("gridExtra")
 # 1. DATA WRANGLING
 {
 ## 1.1. READ RAW DATA
-f1 <- "../data/datamod_20230208.csv"
+f1 <- "../data/datamod_20230217.csv"
 d1 <- read.table(
   file=f1,
   header=FALSE,
@@ -69,7 +69,7 @@ d2$TIME <- as.POSIXlt(d2$TIME)
 a1    <- "(AL\\sBERTO|AL-BERTO)"
 a2    <- "QUINTA.*(MARQUÊS|MARQUES)"
 a3_1  <- "INSTITUTO.*DESENVOLVIMENTO.*SOCIAL"
-a3_2  <- "(IDE|I\\.D\\.E\\.|I\\.\\sD\\.\\sE\\.)"
+a3_2  <- "(IDS|I\\.D\\.S\\.|I\\.\\sD\\.\\sS\\.)"
 a4    <- "FREI.*(LUIS|LUÍS).*SOUSA"
 a5    <- "GUADALUPE"
 a6    <- "(FUNDAO|FUNDÃO)"
@@ -106,7 +106,7 @@ s15 <- grepl(a15,toupper(d2$PLACE))
 s16 <- grepl(a16,toupper(d2$PLACE))
 d2$PLACE[s1]  <- "Escola Secundária Poeta Al Berto"
 d2$PLACE[s2]  <- "Escola Secundária Quinta do Marquês"
-d2$PLACE[s3]  <- "Instituto para o Desenvolvimento Social"
+d2$PLACE[s3]  <- "Instituto de Desenvolvimento Social"
 d2$PLACE[s4]  <- "Externato Frei Luís de Sousa"
 d2$PLACE[s5]  <- "Colégio Guadalupe"
 d2$PLACE[s6]  <- "Agrupamento de Escolas do Fundão"
@@ -153,6 +153,7 @@ a6 <- "(AZUL|BLUE)"
 a7 <- "(VERMELHO|VERMALHO|VERMELHA|VERMALHA|ENCARNADO|ENCARNADA|RED)"
 a8 <- "(ROSA|ROSINHA|ROSE)"
 a9 <- "(VERDE|GREEN)"
+a10 <- "(ROXO|ROXA|PURPLE)"
 s1 <- grepl(a1,toupper(d2$COLOUR))
 s2 <- grepl(a2,toupper(d2$COLOUR))
 s3 <- grepl(a3,toupper(d2$COLOUR))
@@ -162,6 +163,7 @@ s6 <- grepl(a6,toupper(d2$COLOUR))
 s7 <- grepl(a7,toupper(d2$COLOUR))
 s8 <- grepl(a8,toupper(d2$COLOUR))
 s9 <- grepl(a9,toupper(d2$COLOUR))
+s10 <- grepl(a10,toupper(d2$COLOUR))
 d2$COLOUR[s1] <- "Prateado"
 d2$COLOUR[s2] <- "Dourado"
 d2$COLOUR[s3] <- "Branco"
@@ -171,11 +173,12 @@ d2$COLOUR[s6] <- "Azul"
 d2$COLOUR[s7] <- "Vermelho"
 d2$COLOUR[s8] <- "Rosa"
 d2$COLOUR[s9] <- "Verde"
+d2$COLOUR[s10] <- "Roxo"
 d2$COLOUR <- ifelse(d2$COLOUR %in% c("Prateado","Dourado","Branco","Preto",
-  "Cinzento","Azul","Vermelho","Rosa","Verde"),d2$COLOUR,
+  "Cinzento","Azul","Vermelho","Rosa","Verde","Roxo"),d2$COLOUR,
              ifelse(!is.na(d2$COLOUR),"Outra",NA))
 d2$COLOUR <- factor(d2$COLOUR,levels=c("Prateado","Dourado","Branco","Preto",
-  "Cinzento","Azul","Vermelho","Rosa","Verde","Outra"))
+  "Cinzento","Azul","Vermelho","Rosa","Verde","Roxo","Outra"))
 
 ### 1.2.9. Reformat field PRICE_YN
 d2$PRICE_YN <- ifelse(d2$PRICE_YN=="Sim",TRUE,
@@ -352,6 +355,7 @@ p1 <- ggplot(d4) +
     "Vermelho"="red",
     "Rosa"="pink",
     "Verde"="green",
+    "Roxo"="purple",
     "Outra"="darkgrey"),
     na.value="darkgrey")
 ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
@@ -589,7 +593,7 @@ p1 <- ggplot(d5) +
   facet_grid(~SOCIALNET)
 ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
 
-f1 <- "../media/21.logistic_regression_simple.tif"
+f1 <- "../media/21.logistic_regression_multiple.tif"
 xlab <- "Preço (€)"
 ylab <- "Probabilidade de Jogar"
 tlab <- "Jogar vs. Preço do Smartphone (by Rede Social)"
