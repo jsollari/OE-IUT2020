@@ -2,9 +2,9 @@
 #local:      INE, Lisboa
 #Rversion:   4.1.1
 #criado:     23.01.2020
-#modificado: 17.02.2023
+#modificado: 22.02.2023
 
-setwd("2023/2023.02.17_escolas_OE-IUT2020/bin/")
+setwd("2023/2023.02.22_escolas_OE-IUT2020/bin/")
 
 library("ggplot2")
 library("gridExtra")
@@ -30,7 +30,7 @@ library("gridExtra")
 # 1. DATA WRANGLING
 {
 ## 1.1. READ RAW DATA
-f1 <- "../data/datamod_20230217.csv"
+f1 <- "../data/datamod_20230222.csv"
 d1 <- read.table(
   file=f1,
   header=FALSE,
@@ -69,7 +69,8 @@ d2$TIME <- as.POSIXlt(d2$TIME)
 a1    <- "(AL\\sBERTO|AL-BERTO)"
 a2    <- "QUINTA.*(MARQUÊS|MARQUES)"
 a3_1  <- "INSTITUTO.*DESENVOLVIMENTO.*SOCIAL"
-a3_2  <- "(IDS|I\\.D\\.S\\.|I\\.\\sD\\.\\sS\\.)"
+a3_2  <- "(IDE|I\\.D\\.E\\.|I\\.\\sD\\.\\sE\\.)"
+a3_3  <- "(IDS|I\\.D\\.S\\.|I\\.\\sD\\.\\sS\\.)"
 a4    <- "FREI.*(LUIS|LUÍS).*SOUSA"
 a5    <- "GUADALUPE"
 a6    <- "(FUNDAO|FUNDÃO)"
@@ -88,9 +89,10 @@ a14_1 <- "INSTITUTO.*(EDUCACAO.*|)DESENVOLVIMENTO.*PROFISSIONAL"
 a14_2 <- "(IEDP|I\\.E\\.D\\.P\\.|I\\.\\sE\\.\\sD\\.\\sP\\.)"
 a15   <- "BAIXO.*BARROSO"
 a16   <- "BATALHA"
+a17   <- "PALMELA"
 s1  <- grepl(a1,toupper(d2$PLACE))
 s2  <- grepl(a2,toupper(d2$PLACE))
-s3  <- grepl(a3_1,toupper(d2$PLACE)) | grepl(a3_2,toupper(d2$PLACE))
+s3  <- grepl(a3_1,toupper(d2$PLACE)) | grepl(a3_2,toupper(d2$PLACE)) | grepl(a3_3,toupper(d2$PLACE))
 s4  <- grepl(a4,toupper(d2$PLACE))
 s5  <- grepl(a5,toupper(d2$PLACE))
 s6  <- grepl(a6,toupper(d2$PLACE))
@@ -104,9 +106,10 @@ s13 <- grepl(a13_1,toupper(d2$PLACE)) | grepl(a13_2,toupper(d2$PLACE))
 s14 <- grepl(a14_1,toupper(d2$PLACE)) | grepl(a14_2,toupper(d2$PLACE))
 s15 <- grepl(a15,toupper(d2$PLACE))
 s16 <- grepl(a16,toupper(d2$PLACE))
+s17 <- grepl(a17,toupper(d2$PLACE))
 d2$PLACE[s1]  <- "Escola Secundária Poeta Al Berto"
 d2$PLACE[s2]  <- "Escola Secundária Quinta do Marquês"
-d2$PLACE[s3]  <- "Instituto de Desenvolvimento Social"
+d2$PLACE[s3]  <- "Instituto para o Desenvolvimento Social"
 d2$PLACE[s4]  <- "Externato Frei Luís de Sousa"
 d2$PLACE[s5]  <- "Colégio Guadalupe"
 d2$PLACE[s6]  <- "Agrupamento de Escolas do Fundão"
@@ -120,6 +123,7 @@ d2$PLACE[s13] <- "Escola Secundária Luís Freitas Branco"
 d2$PLACE[s14] <- "Instituto de Educação e Desenvolvimento Profissional"
 d2$PLACE[s15] <- "Escola Básica e Secundária Baixo Barroso"
 d2$PLACE[s16] <- "Agrupamento de Escolas da Batalha"
+d2$PLACE[s17] <- "Escola Secundária de Palmela"
 d2$PLACE <- factor(d2$PLACE)
 
 ### 1.2.3. Reformat field GRADE
@@ -153,7 +157,6 @@ a6 <- "(AZUL|BLUE)"
 a7 <- "(VERMELHO|VERMALHO|VERMELHA|VERMALHA|ENCARNADO|ENCARNADA|RED)"
 a8 <- "(ROSA|ROSINHA|ROSE)"
 a9 <- "(VERDE|GREEN)"
-a10 <- "(ROXO|ROXA|PURPLE)"
 s1 <- grepl(a1,toupper(d2$COLOUR))
 s2 <- grepl(a2,toupper(d2$COLOUR))
 s3 <- grepl(a3,toupper(d2$COLOUR))
@@ -163,7 +166,6 @@ s6 <- grepl(a6,toupper(d2$COLOUR))
 s7 <- grepl(a7,toupper(d2$COLOUR))
 s8 <- grepl(a8,toupper(d2$COLOUR))
 s9 <- grepl(a9,toupper(d2$COLOUR))
-s10 <- grepl(a10,toupper(d2$COLOUR))
 d2$COLOUR[s1] <- "Prateado"
 d2$COLOUR[s2] <- "Dourado"
 d2$COLOUR[s3] <- "Branco"
@@ -173,12 +175,11 @@ d2$COLOUR[s6] <- "Azul"
 d2$COLOUR[s7] <- "Vermelho"
 d2$COLOUR[s8] <- "Rosa"
 d2$COLOUR[s9] <- "Verde"
-d2$COLOUR[s10] <- "Roxo"
 d2$COLOUR <- ifelse(d2$COLOUR %in% c("Prateado","Dourado","Branco","Preto",
-  "Cinzento","Azul","Vermelho","Rosa","Verde","Roxo"),d2$COLOUR,
+  "Cinzento","Azul","Vermelho","Rosa","Verde"),d2$COLOUR,
              ifelse(!is.na(d2$COLOUR),"Outra",NA))
 d2$COLOUR <- factor(d2$COLOUR,levels=c("Prateado","Dourado","Branco","Preto",
-  "Cinzento","Azul","Vermelho","Rosa","Verde","Roxo","Outra"))
+  "Cinzento","Azul","Vermelho","Rosa","Verde","Outra"))
 
 ### 1.2.9. Reformat field PRICE_YN
 d2$PRICE_YN <- ifelse(d2$PRICE_YN=="Sim",TRUE,
@@ -292,7 +293,7 @@ s1 <- d2$SOCIALNET == "Outra"
 cbind(d1$SOCIALNET,as.character(d2$SOCIALNET))[s1,] #6. SOCIALNET = "Outra"
 
 ## 1.4. WRITE DATA
-f1 <- "../results/data_20230208.csv"
+f1 <- "../results/data_20230222.csv"
 write.table(
   x=d2,
   file=f1,
@@ -304,8 +305,8 @@ write.table(
 }
 # 2. EXPLORE DATA
 {
-d3 <- d2[d2$GRADE!="Professor",]
-d4 <- d2[d2$GRADE!="Professor" & d2$SMARTPHONE_YN,]
+d3 <- d2[!d2$GRADE %in% "Professor",]
+d4 <- d2[!d2$GRADE %in% "Professor" & d2$SMARTPHONE_YN,]
 
 ## 2.1. VISUALIZATION
 
@@ -332,7 +333,7 @@ ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
 
 ### 2.1.3. AGE_FIRST (Frequency table)
 f1 <- "../media/3.cumtab.csv"
-d5 <- d2[d2$GRADE!="Professor" & d2$SMARTPHONE_YN & d2$AGE_FIRST_YN,]
+d5 <- d2[!d2$GRADE %in% "Professor" & d2$SMARTPHONE_YN & d2$AGE_FIRST_YN,]
 t1 <- table(d5$AGE_FIRST)
 t2 <- prop.table(t1)
 t3 <- cbind(Freq=t1,Cumul=cumsum(t1),Rel=round(t2,2),RelCumul=round(cumsum(t2),2))
@@ -355,13 +356,12 @@ p1 <- ggplot(d4) +
     "Vermelho"="red",
     "Rosa"="pink",
     "Verde"="green",
-    "Roxo"="purple",
     "Outra"="darkgrey"),
     na.value="darkgrey")
 ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
 
 ### 2.1.5. PRICE (Boxplot)
-d5 <- d2[d2$GRADE!="Professor" & d2$SMARTPHONE_YN & d2$PRICE_YN,]
+d5 <- d2[!d2$GRADE %in% "Professor" & d2$SMARTPHONE_YN & d2$PRICE_YN,]
 
 f1 <- "../media/5.boxplot_simple.tif"
 ylab <- "Preço (€)"
@@ -407,7 +407,7 @@ p1 <- ggplot(d4) +
 ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
 
 ### 2.1.9. SATISFACTION vs PRICE (Stacked barplot)
-d5 <- d2[d2$GRADE!="Professor" & d2$SMARTPHONE_YN & d2$PRICE_YN,]
+d5 <- d2[!d2$GRADE %in% "Professor" & d2$SMARTPHONE_YN & d2$PRICE_YN,]
 d5$PRICE_CAT <- cut(d5$PRICE,breaks=5,dig.lab=4)
 
 f1 <- "../media/9.barplot_stacked.tif"
@@ -424,7 +424,7 @@ ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
 ## 2.2. SUMMARY STATISTICS
 
 ### 2.2.1. AGE_FIRST
-d5 <- d2[d2$GRADE!="Professor" & d2$SMARTPHONE_YN & d2$AGE_FIRST_YN,]
+d5 <- d2[!d2$GRADE %in% "Professor" & d2$SMARTPHONE_YN & d2$AGE_FIRST_YN,]
 d5 <- d5[!is.na(d5$AGE_FIRST),]
 v1 <- c(
   Mean=round(mean(d5$AGE_FIRST),2),                       #mean
@@ -444,7 +444,7 @@ p1 <- ggplot(d5) +
   labs(x=xlab,y=ylab,title=tlab)  
 
 ### 2.2.1. PRICE
-d5 <- d2[d2$GRADE!="Professor" & d2$SMARTPHONE_YN & d2$PRICE_YN,]
+d5 <- d2[!d2$GRADE %in% "Professor" & d2$SMARTPHONE_YN & d2$PRICE_YN,]
 d5 <- d5[!is.na(d5$PRICE),]
 v2 <- c(
   Mean=round(mean(d5$PRICE),2),                           #mean
@@ -494,7 +494,7 @@ ggsave(f1,p4,"tiff",width=21,height=7,units="in",dpi=300,compression="lzw")
 # 3. MODEL DATA
 {
 ## 3.1. PRICE_NEW ~ PRICE [Simple linear regression]
-d5 <- d2[d2$GRADE!="Professor" & d2$SMARTPHONE_YN & d2$PRICE_YN,]
+d5 <- d2[!d2$GRADE %in% "Professor" & d2$SMARTPHONE_YN & d2$PRICE_YN,]
 
 f1 <- "../media/12.lmtab_simple.txt"
 m1 <- lm(PRICE_NEW ~ PRICE,data=d5)
@@ -513,7 +513,7 @@ p1 <- ggplot(d5,aes(x=PRICE,y=PRICE_NEW)) +
 ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
 
 ## 3.2. PRICE_NEW ~ PRICE + PLAY_PHONE [Multiple linear regression]
-d5 <- d2[d2$GRADE!="Professor" & d2$SMARTPHONE_YN & d2$PRICE_YN,]
+d5 <- d2[!d2$GRADE %in% "Professor" & d2$SMARTPHONE_YN & d2$PRICE_YN,]
 
 f1 <- "../media/14.lmtab_multiple.txt"
 m1 <- lm(PRICE_NEW ~ PRICE + PLAY_PHONE,data=d5)
@@ -534,7 +534,7 @@ p1 <- ggplot(d5,aes(x=PRICE,y=PRICE_NEW,color=PLAY_PHONE)) +
 ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
 
 ## 3.3. PLAY_PHONE ~ PRICE [Simple logistic regression]
-d5 <- d2[d2$GRADE!="Professor" & d2$SMARTPHONE_YN & d2$PRICE_YN,]
+d5 <- d2[!d2$GRADE %in% "Professor" & d2$SMARTPHONE_YN & d2$PRICE_YN,]
 
 f1 <- "../media/16.glmtab_simple.txt"
 m1 <- glm(PLAY_PHONE ~ PRICE,family="binomial",data=d5)
@@ -567,7 +567,7 @@ p1 <- ggplot(d5,aes(x=PRICE,y=as.numeric(PLAY_PHONE))) +
 ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
 
 ## 3.4. PLAY_PHONE ~ PRICE + SOCIALNET [Multiple logistic regression]
-d5 <- d2[d2$GRADE!="Professor" & d2$SMARTPHONE_YN & d2$PRICE_YN,]
+d5 <- d2[!d2$GRADE %in%"Professor" & d2$SMARTPHONE_YN & d2$PRICE_YN,]
 t1 <- table(d5$SOCIALNET,d5$PLAY_PHONE)
 s1 <- d5$SOCIALNET %in% rownames(t1[apply(t1,1,function(x)all(x!=0)),])
 d5 <- d5[s1,]
