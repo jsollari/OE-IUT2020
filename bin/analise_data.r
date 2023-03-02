@@ -2,9 +2,9 @@
 #local:      INE, Lisboa
 #Rversion:   4.1.1
 #criado:     23.01.2020
-#modificado: 22.02.2023
+#modificado: 03.01.2023
 
-setwd("2023/2023.02.22_escolas_OE-IUT2020/bin/")
+setwd("2023/2023.03.01_escolas_OE-IUT2020/bin/")
 
 library("ggplot2")
 library("gridExtra")
@@ -30,7 +30,7 @@ library("gridExtra")
 # 1. DATA WRANGLING
 {
 ## 1.1. READ RAW DATA
-f1 <- "../data/datamod_20230222.csv"
+f1 <- "../data/datamod_20230301.csv"
 d1 <- read.table(
   file=f1,
   header=FALSE,
@@ -90,6 +90,7 @@ a14_2 <- "(IEDP|I\\.E\\.D\\.P\\.|I\\.\\sE\\.\\sD\\.\\sP\\.)"
 a15   <- "BAIXO.*BARROSO"
 a16   <- "BATALHA"
 a17   <- "PALMELA"
+a18   <- "CEFAD"
 s1  <- grepl(a1,toupper(d2$PLACE))
 s2  <- grepl(a2,toupper(d2$PLACE))
 s3  <- grepl(a3_1,toupper(d2$PLACE)) | grepl(a3_2,toupper(d2$PLACE)) | grepl(a3_3,toupper(d2$PLACE))
@@ -107,9 +108,10 @@ s14 <- grepl(a14_1,toupper(d2$PLACE)) | grepl(a14_2,toupper(d2$PLACE))
 s15 <- grepl(a15,toupper(d2$PLACE))
 s16 <- grepl(a16,toupper(d2$PLACE))
 s17 <- grepl(a17,toupper(d2$PLACE))
+s18 <- grepl(a18,toupper(d2$PLACE))
 d2$PLACE[s1]  <- "Escola Secundária Poeta Al Berto"
 d2$PLACE[s2]  <- "Escola Secundária Quinta do Marquês"
-d2$PLACE[s3]  <- "Instituto para o Desenvolvimento Social"
+d2$PLACE[s3]  <- "Instituto de Desenvolvimento Social"
 d2$PLACE[s4]  <- "Externato Frei Luís de Sousa"
 d2$PLACE[s5]  <- "Colégio Guadalupe"
 d2$PLACE[s6]  <- "Agrupamento de Escolas do Fundão"
@@ -124,6 +126,7 @@ d2$PLACE[s14] <- "Instituto de Educação e Desenvolvimento Profissional"
 d2$PLACE[s15] <- "Escola Básica e Secundária Baixo Barroso"
 d2$PLACE[s16] <- "Agrupamento de Escolas da Batalha"
 d2$PLACE[s17] <- "Escola Secundária de Palmela"
+d2$PLACE[s18] <- "Escola Profissional CEFAD"
 d2$PLACE <- factor(d2$PLACE)
 
 ### 1.2.3. Reformat field GRADE
@@ -144,7 +147,7 @@ d2$AGE_FIRST_YN <- ifelse(d2$AGE_FIRST_YN=="Sim",TRUE,
                    ifelse(d2$AGE_FIRST_YN=="Não",FALSE,NA))
 
 ### 1.2.7. Reformat field AGE_FIRST
-a1 <- "(ANOS|ANO|ANOS DE IDADE)"
+a1 <- "(TINHA|ANOS|ANO|ANOS DE IDADE)"
 d2$AGE_FIRST <- as.numeric(gsub(a1,"",toupper(d2$AGE_FIRST)))
 
 ### 1.2.8. Reformat field COLOUR
@@ -157,6 +160,7 @@ a6 <- "(AZUL|BLUE)"
 a7 <- "(VERMELHO|VERMALHO|VERMELHA|VERMALHA|ENCARNADO|ENCARNADA|RED)"
 a8 <- "(ROSA|ROSINHA|ROSE)"
 a9 <- "(VERDE|GREEN)"
+a10 <- "(ROXO|ROXA|PURPLE)"
 s1 <- grepl(a1,toupper(d2$COLOUR))
 s2 <- grepl(a2,toupper(d2$COLOUR))
 s3 <- grepl(a3,toupper(d2$COLOUR))
@@ -166,6 +170,7 @@ s6 <- grepl(a6,toupper(d2$COLOUR))
 s7 <- grepl(a7,toupper(d2$COLOUR))
 s8 <- grepl(a8,toupper(d2$COLOUR))
 s9 <- grepl(a9,toupper(d2$COLOUR))
+s10 <- grepl(a10,toupper(d2$COLOUR))
 d2$COLOUR[s1] <- "Prateado"
 d2$COLOUR[s2] <- "Dourado"
 d2$COLOUR[s3] <- "Branco"
@@ -175,11 +180,12 @@ d2$COLOUR[s6] <- "Azul"
 d2$COLOUR[s7] <- "Vermelho"
 d2$COLOUR[s8] <- "Rosa"
 d2$COLOUR[s9] <- "Verde"
+d2$COLOUR[s10] <- "Roxo"
 d2$COLOUR <- ifelse(d2$COLOUR %in% c("Prateado","Dourado","Branco","Preto",
-  "Cinzento","Azul","Vermelho","Rosa","Verde"),d2$COLOUR,
+  "Cinzento","Azul","Vermelho","Rosa","Verde","Roxo"),d2$COLOUR,
              ifelse(!is.na(d2$COLOUR),"Outra",NA))
 d2$COLOUR <- factor(d2$COLOUR,levels=c("Prateado","Dourado","Branco","Preto",
-  "Cinzento","Azul","Vermelho","Rosa","Verde","Outra"))
+  "Cinzento","Azul","Vermelho","Rosa","Verde","Roxo","Outra"))
 
 ### 1.2.9. Reformat field PRICE_YN
 d2$PRICE_YN <- ifelse(d2$PRICE_YN=="Sim",TRUE,
@@ -187,7 +193,7 @@ d2$PRICE_YN <- ifelse(d2$PRICE_YN=="Sim",TRUE,
 
 ### 1.2.10. Reformat field PRICE
 d2$PRICE <- gsub(",",".",d2$PRICE)
-a1 <- "\\s|\\+[\\/\\s]\\-|€|EUROS"
+a1 <- "\\s|\\+[\\/\\s]\\-|E TAL|€|EUROS"
 d2$PRICE <- as.numeric(gsub(a1,"",toupper(d2$PRICE)))
 
 ### 1.2.11. Reformat field PRICE_NEW
@@ -195,7 +201,7 @@ a1 <- "(^NADA$|^NAO$|^NÃO$|^ZERO$|^0$)"
 s1 <- grepl(a1,toupper(d2$PRICE_NEW))
 d2$PRICE_NEW[s1] <- NA
 d2$PRICE_NEW <- gsub(",",".",d2$PRICE_NEW)
-a1 <- "(\\s|\\+[\\/\\s]\\-|CERCA DE|NO MAXIMO|NO MÁXIMO|MAXIMO|MÁXIMO|ATÉ|ATE|MENOS DE|OU MENOS|MENOS|NÃO MAIS DO QUE|€|EUROS)"
+a1 <- "(\\s|\\+[\\/\\s]\\-|CERCA DE|NO MAXIMO|NO MÁXIMO|MAXIMO|MÁXIMO|ATÉ|ATE|MENOS DE|OU MENOS|MENOS|NÃO MAIS DO QUE|E TAL|€|EUROS)"
 d2$PRICE_NEW <- as.numeric(gsub(a1,"",toupper(d2$PRICE_NEW)))
 
 ### 1.2.12. Reformat field SOCIALNET
@@ -293,7 +299,7 @@ s1 <- d2$SOCIALNET == "Outra"
 cbind(d1$SOCIALNET,as.character(d2$SOCIALNET))[s1,] #6. SOCIALNET = "Outra"
 
 ## 1.4. WRITE DATA
-f1 <- "../results/data_20230222.csv"
+f1 <- "../results/data_20230301.csv"
 write.table(
   x=d2,
   file=f1,
@@ -356,6 +362,7 @@ p1 <- ggplot(d4) +
     "Vermelho"="red",
     "Rosa"="pink",
     "Verde"="green",
+    "Roxo"="purple",
     "Outra"="darkgrey"),
     na.value="darkgrey")
 ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
