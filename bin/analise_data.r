@@ -2,9 +2,9 @@
 #local:      INE, Lisboa
 #Rversion:   4.1.1
 #criado:     23.01.2020
-#modificado: 03.01.2023
+#modificado: 13.01.2023
 
-setwd("2023/2023.03.01_escolas_OE-IUT2020/bin/")
+setwd("2023/2023.03.13_escolas_OE-IUT2020/bin/")
 
 library("ggplot2")
 library("gridExtra")
@@ -30,7 +30,7 @@ library("gridExtra")
 # 1. DATA WRANGLING
 {
 ## 1.1. READ RAW DATA
-f1 <- "../data/datamod_20230301.csv"
+f1 <- "../data/datamod_20230313.csv"
 d1 <- read.table(
   file=f1,
   header=FALSE,
@@ -91,6 +91,7 @@ a15   <- "BAIXO.*BARROSO"
 a16   <- "BATALHA"
 a17   <- "PALMELA"
 a18   <- "CEFAD"
+a19    <- "(SA|SÁ).*BANDEIRA"
 s1  <- grepl(a1,toupper(d2$PLACE))
 s2  <- grepl(a2,toupper(d2$PLACE))
 s3  <- grepl(a3_1,toupper(d2$PLACE)) | grepl(a3_2,toupper(d2$PLACE)) | grepl(a3_3,toupper(d2$PLACE))
@@ -109,6 +110,7 @@ s15 <- grepl(a15,toupper(d2$PLACE))
 s16 <- grepl(a16,toupper(d2$PLACE))
 s17 <- grepl(a17,toupper(d2$PLACE))
 s18 <- grepl(a18,toupper(d2$PLACE))
+s19 <- grepl(a19,toupper(d2$PLACE))
 d2$PLACE[s1]  <- "Escola Secundária Poeta Al Berto"
 d2$PLACE[s2]  <- "Escola Secundária Quinta do Marquês"
 d2$PLACE[s3]  <- "Instituto de Desenvolvimento Social"
@@ -127,6 +129,7 @@ d2$PLACE[s15] <- "Escola Básica e Secundária Baixo Barroso"
 d2$PLACE[s16] <- "Agrupamento de Escolas da Batalha"
 d2$PLACE[s17] <- "Escola Secundária de Palmela"
 d2$PLACE[s18] <- "Escola Profissional CEFAD"
+d2$PLACE[s19] <- "Agrupamento de Escolas Sá da Bandeira"
 d2$PLACE <- factor(d2$PLACE)
 
 ### 1.2.3. Reformat field GRADE
@@ -208,17 +211,20 @@ d2$PRICE_NEW <- as.numeric(gsub(a1,"",toupper(d2$PRICE_NEW)))
 a1 <- "YOUTUBE"
 a2 <- "(REDDIT|REDIT)"
 a3 <- "(TIKTOK|TIK\\sTOK)"
+a4 <- "TELEGRAM"
 s1 <- grepl(a1,toupper(d2$SOCIALNET))
 s2 <- grepl(a2,toupper(d2$SOCIALNET))
 s3 <- grepl(a3,toupper(d2$SOCIALNET))
+s4 <- grepl(a4,toupper(d2$SOCIALNET))
 d2$SOCIALNET[s1] <- "Youtube"
 d2$SOCIALNET[s2] <- "Reddit"
 d2$SOCIALNET[s3] <- "TikTok"
+d2$SOCIALNET[s4] <- "Telegram"
 d2$SOCIALNET <- ifelse(d2$SOCIALNET %in% c("WhatsApp","Instagram","Snapchat",
-  "Twitter","Facebook","Youtube","Reddit","TikTok","Nenhuma"),d2$SOCIALNET,
+  "Twitter","Facebook","Youtube","Reddit","TikTok","Telegram","Nenhuma"),d2$SOCIALNET,
                 ifelse(!is.na(d2$SOCIALNET),"Outra",NA))
 d2$SOCIALNET <- factor(d2$SOCIALNET,levels=c("WhatsApp","Instagram","Snapchat",
-  "Twitter","Facebook","Youtube","Reddit","TikTok","Outra","Nenhuma"))
+  "Twitter","Facebook","Youtube","Reddit","TikTok","Telegram","Outra","Nenhuma"))
 
 ### 1.2.13. Reformat field PLAY_PHONE
 d2$PLAY_PHONE <- ifelse(d2$PLAY_PHONE=="Sim",TRUE,
@@ -299,7 +305,7 @@ s1 <- d2$SOCIALNET == "Outra"
 cbind(d1$SOCIALNET,as.character(d2$SOCIALNET))[s1,] #6. SOCIALNET = "Outra"
 
 ## 1.4. WRITE DATA
-f1 <- "../results/data_20230301.csv"
+f1 <- "../results/data_20230313.csv"
 write.table(
   x=d2,
   file=f1,
