@@ -2,9 +2,9 @@
 #local:      INE, Lisboa
 #Rversion:   4.1.1
 #criado:     23.01.2020
-#modificado: 21.03.2023
+#modificado: 23.03.2023
 
-setwd("2023/2023.03.23_escolas_OE-IUT2020/bin/")
+setwd("2023/2023.03.24_escolas_OE-IUT2020/bin/")
 
 library("ggplot2")
 library("gridExtra")
@@ -30,7 +30,7 @@ library("gridExtra")
 # 1. DATA WRANGLING
 {
 ## 1.1. READ RAW DATA
-f1 <- "../data/datamod_20230323.csv"
+f1 <- "../data/datamod_20230324.csv"
 d1 <- read.table(
   file=f1,
   header=FALSE,
@@ -173,7 +173,7 @@ a6  <- "(AZUL|BLUE)"
 a7  <- "(VERMELHO|VERMALHO|VERMELHA|VERMALHA|ENCARNADO|ENCARNADA|RED)"
 a8  <- "(ROSA|ROSINHA|ROSE)"
 a9  <- "(VERDE|GREEN)"
-a10 <- "(ROXO|ROXA|LILAS|PURPLE)"
+a10 <- "(ROXO|ROXA|ROCHO|ROCHA|LILAS|PURPLE)"
 s1  <- grepl(a1,d2$COLOUR)
 s2  <- grepl(a2,d2$COLOUR)
 s3  <- grepl(a3,d2$COLOUR)
@@ -208,7 +208,7 @@ d2$PRICE_YN <- ifelse(d2$PRICE_YN=="Sim",TRUE,
 d2$PRICE <- gsub("€|%|£|$","",d2$PRICE)
 d2$PRICE <- toupper(iconv(enc2utf8(as.character(d2$PRICE)),"UTF-8","ASCII//TRANSLIT"))
 d2$PRICE <- gsub(",",".",d2$PRICE)
-a1 <- "\\s|\\+[\\/\\s]\\-|E TAL|E POUCOS|EUROS"
+a1 <- "\\s|\\+(\\/|\\s)?\\-|E TAL|E POUCOS|APROXIMADAMENTE|\\~|EUROS|EURO|ACHO"
 d2$PRICE <- as.numeric(gsub(a1,"",d2$PRICE))
 
 ### 1.2.11. Reformat field PRICE_NEW
@@ -219,7 +219,7 @@ a1 <- "(^NADA$|^NAO$|^ZERO$|^0$)"
 s1 <- grepl(a1,d2$PRICE_NEW)
 d2$PRICE_NEW[s1] <- NA
 d2$PRICE_NEW <- gsub(",",".",d2$PRICE_NEW)
-a1 <- "(\\s|\\+[\\/\\s]\\-|CERCA DE|NO MAXIMO|MAXIMO|ATE|MENOS DE|OU MENOS|MENOS|NAO MAIS DO QUE|E TAL|E POUCOS|EUROS)"
+a1 <- "\\s|\\+(\\/|\\s)?\\-|CERCA DE|NO MAXIMO|MAXIMO|ATE|MENOS DE|OU MENOS|MENOS|NAO MAIS DO QUE|E TAL|E POUCOS|EUROS|EURO"
 d2$PRICE_NEW <- as.numeric(gsub(a1,"",d2$PRICE_NEW))
 
 ### 1.2.12. Reformat field SOCIALNET
@@ -253,7 +253,7 @@ d2$SOCIALNET[s6]  <- "Youtube"
 d2$SOCIALNET[s7]  <- "Reddit"
 d2$SOCIALNET[s8]  <- "TikTok"
 d2$SOCIALNET[s9]  <- "Telegram"
-d2$SOCIALNET[s10] <- "NENHUMA"
+d2$SOCIALNET[s10] <- "Nenhuma"
 d2$SOCIALNET <- ifelse(d2$SOCIALNET %in% c("WhatsApp","Instagram","Snapchat",
   "Twitter","Facebook","Youtube","Reddit","TikTok","Telegram","Nenhuma"),d2$SOCIALNET,
                 ifelse(!is.na(d2$SOCIALNET),"Outra",NA))
@@ -339,7 +339,7 @@ s1 <- d2$SOCIALNET == "Outra"
 cbind(d1$SOCIALNET,as.character(d2$SOCIALNET))[s1,] #6. SOCIALNET = "Outra"
 
 ## 1.4. WRITE DATA
-f1 <- "../results/data_20230323.csv"
+f1 <- "../results/data_20230324.csv"
 write.table(
   x=d2,
   file=f1,
