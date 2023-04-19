@@ -4,7 +4,7 @@
 #criado:     23.01.2020
 #modificado: 23.03.2023
 
-setwd("2023/2023.03.24_escolas_OE-IUT2020/bin/")
+setwd("2023/2023.04.18_meia_hoRa/bin/")
 
 library("ggplot2")
 library("gridExtra")
@@ -15,22 +15,23 @@ library("gridExtra")
 # 1.1. READ RAW DATA
 # 1.2. FORMAT RAW DATA
 # 1.3. AUTOMATIC CHECKS
-# 1.4. MANUALL CHECKS
+# 1.4. MANUAL CHECKS
 # 1.5. WRITE DATA
 # 2. EXPLORE DATA
 # 2.1. VISUALIZATION
 # 2.2. SUMMARY STATISTICS
 # 3. MODEL DATA
 # 3.1. PRICE_NEW ~ PRICE
-# 3.2. PRICE_NEW ~ PRICE + PLAY_OTHER
-# 3.3. PLAY_OTHER ~ PRICE
-# 3.4. PLAY_OTHER ~ PRICE + SOCIALNET
+# 3.2. PRICE_NEW ~ PRICE + PLAY_PHONE
+# 3.3. PLAY_PHONE ~ PRICE
+# 3.4. PLAY_PHONE ~ PRICE + SOCIALNET
 
 }
 # 1. DATA WRANGLING
 {
 ## 1.1. READ RAW DATA
-f1 <- "../data/datamod_20230324.csv"
+f1 <- "../data/dataraw_20230324.csv"
+#f1 <- "../data/datamod_20230324.csv"
 d1 <- read.table(
   file=f1,
   header=FALSE,
@@ -42,30 +43,30 @@ d1 <- read.table(
   fileEncoding="UTF-8")
 
 colnames(d1) <- c(
-  "TIME",          #Time stamp of interview
-  "PLACE",         #Name of education establishment
-  "GRADE",         #Grade level
-  "SMARTPHONE_YN", #Having Smartphone
-  "ACQUIRED",      #Acquisition of Smartphone
-  "AGE_FIRST_YN",  #Remember age when first Smartphone acquired
-  "AGE_FIRST",     #Age when first smartphone acquired
-  "COLOUR",        #Smartphone colour
-  "PRICE_YN",      #Remember price of Smartphone
-  "PRICE",         #Price of Smartphone
-  "PRICE_NEW",     #Price willing to pay for new Smartphone
-  "SOCIALNET",     #Social network used more frequently
-  "PLAY_PHONE",    #Play on Smartphone
-  "PLAY_OTHER",    #Play on other devices
-  "SATISFACTION"   #Degree of satisfaction
+  "TIME",          #Time stamp of interview             <automatic> <POSIXt>
+  "PLACE",         #Name of education establishment     <open>      <factor>
+  "GRADE",         #Grade level                         <closed>    <factor>
+  "SMARTPHONE_YN", #Having Smartphone                   <yes/no>    <logical>
+  "ACQUIRED",      #Acquisition of Smartphone           <mixed>     <factor>
+  "AGE_FIRST_YN",  #Remember age of first acquisition   <yes/no>    <logical>
+  "AGE_FIRST",     #Age when first smartphone acquired  <open>      <numeric>
+  "COLOUR",        #Smartphone colour                   <open>      <factor>
+  "PRICE_YN",      #Remember price of Smartphone        <yes/no>    <logical>
+  "PRICE",         #Price of Smartphone                 <open>      <numeric>
+  "PRICE_NEW",     #Price to pay for new Smartphone     <open>      <numeric>
+  "SOCIALNET",     #Social network used more frequently <mixed>     <factor>
+  "PLAY_PHONE",    #Play on Smartphone                  <yes/no>    <logical>
+  "PLAY_OTHER",    #Play on other devices               <yes/no>    <logical>
+  "SATISFACTION"   #Degree of satisfaction              <closed>    <factor>
 )
 
 ## 1.2. REFORMAT RAW DATA
 d2 <- d1
 
-### 1.2.1. Reformat field TIME
+### 1.2.1. Reformat field TIME <automatic>
 d2$TIME <- as.POSIXlt(d2$TIME)
 
-### 1.2.2. Reformat field PLACE
+### 1.2.2. Reformat field PLACE <open field>
 d2$PLACE <- toupper(iconv(enc2utf8(as.character(d2$PLACE)),"UTF-8","ASCII//TRANSLIT"))
 a1    <- "(AL\\sBERTO|AL-BERTO)"
 a2    <- "QUINTA.*MARQUES"
@@ -78,7 +79,7 @@ a6    <- "FUNDAO"
 a7    <- "ANTONIO.*SERGIO"
 a8    <- "PASSOS.*MANUEL"
 a9_1  <- "INSTITUTO.*CIENCIAS.*EDUCATIVAS"
-a9_2  <- "(ICE|I\\.C\\.E\\.|I\\.\\sC\\.\\sE\\.)"
+a9_2  <- "(^ICE$|I\\.C\\.E\\.|I\\.\\sC\\.\\sE\\.)"
 a10_1 <- "ESCOLA.*SUPERIOR.*EDUCACAO.*SANTAREM"
 a10_2 <- "INSTITUTO.*POLITECNICO.*SANTAREM"
 a11_1 <- "SINES"
@@ -140,29 +141,28 @@ d2$PLACE[s20] <- "Agrupamento de Escolas Gil Vicente"
 d2$PLACE[s21] <- "Colégio Miramar"
 d2$PLACE <- factor(d2$PLACE)
 
-### 1.2.3. Reformat field GRADE
-d2$GRADE <- gsub("ºAno","",d2$GRADE)
-d2$GRADE <- factor(d2$GRADE,levels=c(1:12,"Professor"))
+### 1.2.3. Reformat field GRADE <closed field>
+d2$GRADE <- factor(gsub("ºAno","",d2$GRADE),levels=c(1:12,"Professor"))
 
-### 1.2.4. Reformat field SMARTPHONE_YN
+### 1.2.4. Reformat field SMARTPHONE_YN <yes/no field>
 d2$SMARTPHONE_YN <- ifelse(d2$SMARTPHONE_YN=="Sim",TRUE,
                     ifelse(d2$SMARTPHONE_YN=="Não",FALSE,NA))
 
-### 1.2.5. Reformat field ACQUIRED
+### 1.2.5. Reformat field ACQUIRED <mixed field>
 d2$ACQUIRED <- ifelse(d2$ACQUIRED %in% c("Oferecido","Comprado"),d2$ACQUIRED,
                ifelse(!is.na(d2$ACQUIRED),"Outro",NA))
 d2$ACQUIRED <- factor(d2$ACQUIRED,levels=c("Oferecido","Comprado","Outro"))
 
-### 1.2.6. Reformat field AGE_FIRST_YN
+### 1.2.6. Reformat field AGE_FIRST_YN <yes/no field>
 d2$AGE_FIRST_YN <- ifelse(d2$AGE_FIRST_YN=="Sim",TRUE,
                    ifelse(d2$AGE_FIRST_YN=="Não",FALSE,NA))
 
-### 1.2.7. Reformat field AGE_FIRST
+### 1.2.7. Reformat field AGE_FIRST <open field>
 d2$AGE_FIRST <- toupper(iconv(enc2utf8(as.character(d2$AGE_FIRST)),"UTF-8","ASCII//TRANSLIT"))
 a1 <- "(TINHA|ANOS|ANO|ANOS DE IDADE)"
 d2$AGE_FIRST <- as.numeric(gsub(a1,"",d2$AGE_FIRST))
 
-### 1.2.8. Reformat field COLOUR
+### 1.2.8. Reformat field COLOUR <open field>
 d2$COLOUR <- toupper(iconv(enc2utf8(as.character(d2$COLOUR)),"UTF-8","ASCII//TRANSLIT"))
 a1  <- "(PRATEADO|PRATEADA|SILVER)"
 a2  <- "(DOURADO|DOURADA|GOLD)"
@@ -200,20 +200,18 @@ d2$COLOUR <- ifelse(d2$COLOUR %in% c("Prateado","Dourado","Branco","Preto",
 d2$COLOUR <- factor(d2$COLOUR,levels=c("Prateado","Dourado","Branco","Preto",
   "Cinzento","Azul","Vermelho","Rosa","Verde","Roxo","Outra"))
 
-### 1.2.9. Reformat field PRICE_YN
+### 1.2.9. Reformat field PRICE_YN <yes/no field>
 d2$PRICE_YN <- ifelse(d2$PRICE_YN=="Sim",TRUE,
                ifelse(d2$PRICE_YN=="Não",FALSE,NA))
 
-### 1.2.10. Reformat field PRICE
-d2$PRICE <- gsub("€|%|£|$","",d2$PRICE)
+### 1.2.10. Reformat field PRICE <open field>
+d2$PRICE <- gsub("€|%|£|$","",gsub(",",".",d2$PRICE))
 d2$PRICE <- toupper(iconv(enc2utf8(as.character(d2$PRICE)),"UTF-8","ASCII//TRANSLIT"))
-d2$PRICE <- gsub(",",".",d2$PRICE)
 a1 <- "\\s|\\+(\\/|\\s)?\\-|E TAL|E POUCOS|APROXIMADAMENTE|\\~|EUROS|EURO|ACHO"
 d2$PRICE <- as.numeric(gsub(a1,"",d2$PRICE))
 
-### 1.2.11. Reformat field PRICE_NEW
-d2$PRICE_NEW <- gsub("€|%|£|$","",d2$PRICE_NEW)
-d2$PRICE_NEW <- gsub(",",".",d2$PRICE_NEW)
+### 1.2.11. Reformat field PRICE_NEW <open field>
+d2$PRICE_NEW <- gsub("€|%|£|$","",gsub(",",".",d2$PRICE_NEW))
 d2$PRICE_NEW <- toupper(iconv(enc2utf8(as.character(d2$PRICE_NEW)),"UTF-8","ASCII//TRANSLIT"))
 a1 <- "(^NADA$|^NAO$|^ZERO$|^0$)"
 s1 <- grepl(a1,d2$PRICE_NEW)
@@ -222,18 +220,18 @@ d2$PRICE_NEW <- gsub(",",".",d2$PRICE_NEW)
 a1 <- "\\s|\\+(\\/|\\s)?\\-|CERCA DE|NO MAXIMO|MAXIMO|ATE|MENOS DE|OU MENOS|MENOS|NAO MAIS DO QUE|E TAL|E POUCOS|EUROS|EURO"
 d2$PRICE_NEW <- as.numeric(gsub(a1,"",d2$PRICE_NEW))
 
-### 1.2.12. Reformat field SOCIALNET
+### 1.2.12. Reformat field SOCIALNET <mixed field>
 d2$SOCIALNET <- toupper(iconv(enc2utf8(as.character(d2$SOCIALNET)),"UTF-8","ASCII//TRANSLIT"))
 a1  <- "WHATSAPP"
 a2  <- "INSTAGRAM"
 a3  <- "SNAPCHAT"
 a4  <- "TWITTER"
 a5  <- "FACEBOOK"
-a6  <- "YOUTUBE"
-a7  <- "(REDDIT|REDIT)"
-a8  <- "(TIKTOK|TIK\\sTOK)"
-a9  <- "TELEGRAM"
-a10 <- "NENHUMA"
+a6  <- "NENHUMA"
+a7  <- "YOUTUBE"
+a8  <- "(REDDIT|REDIT)"
+a9  <- "(TIKTOK|TIK\\sTOK)"
+a10 <- "TELEGRAM"
 s1  <- grepl(a1,d2$SOCIALNET)
 s2  <- grepl(a2,d2$SOCIALNET)
 s3  <- grepl(a3,d2$SOCIALNET)
@@ -249,26 +247,26 @@ d2$SOCIALNET[s2]  <- "Instagram"
 d2$SOCIALNET[s3]  <- "Snapchat"
 d2$SOCIALNET[s4]  <- "Twitter"
 d2$SOCIALNET[s5]  <- "Facebook"
-d2$SOCIALNET[s6]  <- "Youtube"
-d2$SOCIALNET[s7]  <- "Reddit"
-d2$SOCIALNET[s8]  <- "TikTok"
-d2$SOCIALNET[s9]  <- "Telegram"
-d2$SOCIALNET[s10] <- "Nenhuma"
+d2$SOCIALNET[s6]  <- "Nenhuma"
+d2$SOCIALNET[s7]  <- "Youtube"
+d2$SOCIALNET[s8]  <- "Reddit"
+d2$SOCIALNET[s9]  <- "TikTok"
+d2$SOCIALNET[s10] <- "Telegram"
 d2$SOCIALNET <- ifelse(d2$SOCIALNET %in% c("WhatsApp","Instagram","Snapchat",
-  "Twitter","Facebook","Youtube","Reddit","TikTok","Telegram","Nenhuma"),d2$SOCIALNET,
+  "Twitter","Facebook","Nenhuma","Youtube","Reddit","TikTok","Telegram"),d2$SOCIALNET,
                 ifelse(!is.na(d2$SOCIALNET),"Outra",NA))
 d2$SOCIALNET <- factor(d2$SOCIALNET,levels=c("WhatsApp","Instagram","Snapchat",
   "Twitter","Facebook","Youtube","Reddit","TikTok","Telegram","Outra","Nenhuma"))
 
-### 1.2.13. Reformat field PLAY_PHONE
+### 1.2.13. Reformat field PLAY_PHONE <yes/no field>
 d2$PLAY_PHONE <- ifelse(d2$PLAY_PHONE=="Sim",TRUE,
                  ifelse(d2$PLAY_PHONE=="Não",FALSE,NA))
 
-### 1.2.14. Reformat field PLAY_OTHER
+### 1.2.14. Reformat field PLAY_OTHER <yes/no field>
 d2$PLAY_OTHER <- ifelse(d2$PLAY_OTHER=="Sim",TRUE,
                  ifelse(d2$PLAY_OTHER=="Não",FALSE,NA))
 
-### 1.2.15. Reformat field SATISFACTION
+### 1.2.15. Reformat field SATISFACTION <closed field>
 d2$SATISFACTION <- ifelse(d2$SATISFACTION %in% 1:5,d2$SATISFACTION,NA)
 d2$SATISFACTION <- factor(d2$SATISFACTION,levels=1:5)
 
