@@ -2,9 +2,9 @@
 #local:      INE, Lisboa
 #Rversion:   4.1.1
 #criado:     23.01.2020
-#modificado: 23.03.2023
+#modificado: 26.04.2023
 
-setwd("2023/2023.04.18_meia_hoRa/bin/")
+setwd("2023/2023.04.26_escolas_OE-IUT2020/bin/")
 
 library("ggplot2")
 library("gridExtra")
@@ -30,8 +30,8 @@ library("gridExtra")
 # 1. DATA WRANGLING
 {
 ## 1.1. READ RAW DATA
-f1 <- "../data/dataraw_20230324.csv"
-#f1 <- "../data/datamod_20230324.csv"
+#f1 <- "../data/dataraw_20230327.csv"
+f1 <- "../data/datamod_20230327.csv"
 d1 <- read.table(
   file=f1,
   header=FALSE,
@@ -96,6 +96,7 @@ a18   <- "CEFAD"
 a19    <- "SA.*BANDEIRA"
 a20    <- "GIL.*VICENTE"
 a21    <- "COLEGIO.*MIRAMAR"
+a22    <- "FRANCISCO.*HOLANDA"
 s1  <- grepl(a1,d2$PLACE)
 s2  <- grepl(a2,d2$PLACE)
 s3  <- grepl(a3_1,d2$PLACE) | grepl(a3_2,d2$PLACE) | grepl(a3_3,d2$PLACE)
@@ -117,6 +118,7 @@ s18 <- grepl(a18,d2$PLACE)
 s19 <- grepl(a19,d2$PLACE)
 s20 <- grepl(a20,d2$PLACE)
 s21 <- grepl(a21,d2$PLACE)
+s22 <- grepl(a22,d2$PLACE)
 d2$PLACE <- NA
 d2$PLACE[s1]  <- "Escola Secundária Poeta Al Berto"
 d2$PLACE[s2]  <- "Escola Secundária Quinta do Marquês"
@@ -139,6 +141,7 @@ d2$PLACE[s18] <- "Escola Profissional CEFAD"
 d2$PLACE[s19] <- "Agrupamento de Escolas Sá da Bandeira"
 d2$PLACE[s20] <- "Agrupamento de Escolas Gil Vicente"
 d2$PLACE[s21] <- "Colégio Miramar"
+d2$PLACE[s22] <- "Escola Secundária Francisco de Holanda"
 d2$PLACE <- factor(d2$PLACE)
 
 ### 1.2.3. Reformat field GRADE <closed field>
@@ -299,25 +302,21 @@ s1 <- !is.na(d2$AGE_FIRST) & (d2$AGE_FIRST < 0 | d2$AGE_FIRST > 100)
 if(sum(s1) > 0){
   print(d1[s1,])                        #7. AGE_FIRST has to be between 0 and 100
 }
-s1 <- !is.na(d2$PRICE[!d2$PRICE_YN])
+s1 <- d2$SMARTPHONE_YN & !d2$PRICE_YN & !is.na(d2$PRICE)
 if(sum(s1) > 0){
   print(d1[s1,])                        #8. if PRICE_YN is FALSE then PRICE is NA
 }
-s1 <- !is.numeric(d2$PRICE)
+s1 <- d2$SMARTPHONE_YN & d2$PRICE_YN & is.na(d2$PRICE)
 if(sum(s1) > 0){
-  print(d1[s1,])                        #9. PRICE has to be numeric
+  print(d1[s1,])                        #9. if PRICE_YN is TRUE then PRICE is not NA
 }
 s1 <- !is.na(d2$PRICE) & (d2$PRICE < 0 | d2$PRICE > 5000)
 if(sum(s1) > 0){
   print(d1[s1,])                        #10. PRICE has to be between 0 and 5000
 }
-s1 <- !is.numeric(d2$PRICE_NEW)
+s1 <- !is.na(d2$PRICE_NEW) & (d2$PRICE_NEW < 0 | d2$PRICE_NEW > 5000)
 if(sum(s1) > 0){
-  print(d1[s1,])                        #11. PRICE_NEW has to be numeric
-}
-s1 <- !is.na(d2$PRICE_NEW) & (d2$PRICE_NEW < 0 | d2$PRICE_NEW > 10000)
-if(sum(s1) > 0){
-  print(d1[s1,])                        #12. PRICE_NEW has to be less than 10000
+  print(d1[s1,])                        #11. PRICE_NEW has to be less than 5000
 }
 
 ## 1.4. MANUAL CHECKS
@@ -337,7 +336,7 @@ s1 <- d2$SOCIALNET == "Outra"
 cbind(d1$SOCIALNET,as.character(d2$SOCIALNET))[s1,] #6. SOCIALNET = "Outra"
 
 ## 1.4. WRITE DATA
-f1 <- "../results/data_20230324.csv"
+f1 <- "../results/data_20230427.csv"
 write.table(
   x=d2,
   file=f1,
