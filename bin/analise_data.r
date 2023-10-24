@@ -2,9 +2,9 @@
 #local:      INE, Lisboa
 #Rversion:   4.1.1
 #criado:     23.01.2020
-#modificado: 23.10.2023
+#modificado: 24.10.2023
 
-setwd("2023/2023.10.24_escolas_OE-IUT2020/bin/")
+setwd("2023/2023.10.25_escolas_OE-IUT2020/bin/")
 
 library("ggplot2")
 library("gridExtra")
@@ -30,7 +30,7 @@ library("gridExtra")
 # 1. DATA WRANGLING
 {
 ## 1.1. READ RAW DATA
-f1 <- "../data/datamod_20231024.csv"
+f1 <- "../data/datamod_20231025.csv"
 d1 <- read.table(
   file=f1,
   header=FALSE,
@@ -100,6 +100,8 @@ a23    <- "MONTIJO"
 a24_1  <- "ALBUFEIRA"
 a24_2  <- "(EBSA|E\\.B\\.S\\.A\\.|E\\.\\sB\\.\\sS\\.\\sA\\.)"
 a25    <- "JOSE.*FALCAO"
+a26_1  <- "CAMILO.*CASTELO.*BRANCO"
+a26_2  <- "(AECCB|A\\.E\\.C\\.C\\.B\\.|A\\.\\sE\\.\\sC\\.\\sC\\.\\sB\\.)"
 s1  <- grepl(a1,d2$PLACE)
 s2  <- grepl(a2,d2$PLACE)
 s3  <- grepl(a3_1,d2$PLACE) | grepl(a3_2,d2$PLACE) | grepl(a3_3,d2$PLACE)
@@ -125,6 +127,7 @@ s22 <- grepl(a22,d2$PLACE)
 s23 <- grepl(a23,d2$PLACE)
 s24 <- grepl(a24_1,d2$PLACE) | grepl(a24_2,d2$PLACE)
 s25 <- grepl(a25,d2$PLACE)
+s26 <- grepl(a26_1,d2$PLACE) | grepl(a26_2,d2$PLACE)
 d2$PLACE <- NA
 d2$PLACE[s1]  <- "Escola Secundária Poeta Al Berto"
 d2$PLACE[s2]  <- "Escola Secundária Quinta do Marquês"
@@ -151,6 +154,7 @@ d2$PLACE[s22] <- "Escola Secundária Francisco de Holanda"
 d2$PLACE[s23] <- "Escola Profissional do Montijo"
 d2$PLACE[s24] <- "Escola Básica e Secundária de Albufeira"
 d2$PLACE[s25] <- "Escola Secundária José Falcão"
+d2$PLACE[s26] <- "Agrupamento de Escolas Camilo Castelo Branco"
 d2$PLACE <- factor(d2$PLACE)
 
 ### 1.2.3. Reformat field GRADE <closed field>
@@ -171,7 +175,7 @@ d2$AGE_FIRST_YN <- ifelse(d2$AGE_FIRST_YN=="Sim",TRUE,
 
 ### 1.2.7. Reformat field AGE_FIRST <open field>
 d2$AGE_FIRST <- toupper(iconv(enc2utf8(as.character(d2$AGE_FIRST)),"UTF-8","ASCII//TRANSLIT"))
-a1 <- "(TINHA|ANOS|ANO|ANOS DE IDADE)"
+a1 <- "(\\s|TINHA|ANOS|ANO|ANOS DE IDADE)"
 d2$AGE_FIRST <- as.numeric(gsub(a1,"",d2$AGE_FIRST))
 
 ### 1.2.8. Reformat field COLOUR <open field>
@@ -306,29 +310,33 @@ s1 <- !is.na(d2$AGE_FIRST[!d2$AGE_FIRST_YN])
 if(sum(s1) > 0){
   print(d1[s1,])                        #5. if AGE_FIRST_YN is FALSE then AGE_FIRST is NA
 }
+s1 <- d2$SMARTPHONE_YN & d2$AGE_FIRST_YN & is.na(d2$AGE_FIRST)
+if(sum(s1) > 0){
+  print(d1[s1,])                        #6. if AGE_FIRST_YN is TRUE then AGE_FIRST is not NA
+}
 s1 <- !is.numeric(d2$AGE_FIRST)
 if(sum(s1) > 0){
-  print(d1[s1,])                        #6. AGE_FIRST has to be numeric
+  print(d1[s1,])                        #7. AGE_FIRST has to be numeric
 }
 s1 <- !is.na(d2$AGE_FIRST) & (d2$AGE_FIRST < 0 | d2$AGE_FIRST > 100)
 if(sum(s1) > 0){
-  print(d1[s1,])                        #7. AGE_FIRST has to be between 0 and 100
+  print(d1[s1,])                        #8. AGE_FIRST has to be between 0 and 100
 }
 s1 <- d2$SMARTPHONE_YN & !d2$PRICE_YN & !is.na(d2$PRICE)
 if(sum(s1) > 0){
-  print(d1[s1,])                        #8. if PRICE_YN is FALSE then PRICE is NA
+  print(d1[s1,])                        #9. if PRICE_YN is FALSE then PRICE is NA
 }
 s1 <- d2$SMARTPHONE_YN & d2$PRICE_YN & is.na(d2$PRICE)
 if(sum(s1) > 0){
-  print(d1[s1,])                        #9. if PRICE_YN is TRUE then PRICE is not NA
+  print(d1[s1,])                        #10. if PRICE_YN is TRUE then PRICE is not NA
 }
 s1 <- !is.na(d2$PRICE) & (d2$PRICE < 0 | d2$PRICE > 5000)
 if(sum(s1) > 0){
-  print(d1[s1,])                        #10. PRICE has to be between 0 and 5000
+  print(d1[s1,])                        #11. PRICE has to be between 0 and 5000
 }
 s1 <- !is.na(d2$PRICE_NEW) & (d2$PRICE_NEW < 0 | d2$PRICE_NEW > 5000)
 if(sum(s1) > 0){
-  print(d1[s1,])                        #11. PRICE_NEW has to be less than 5000
+  print(d1[s1,])                        #12. PRICE_NEW has to be less than 5000
 }
 
 ## 1.4. MANUAL CHECKS
@@ -348,7 +356,7 @@ s1 <- d2$SOCIALNET == "Outra"
 cbind(d1$SOCIALNET,as.character(d2$SOCIALNET))[s1,] #6. SOCIALNET = "Outra"
 
 ## 1.4. WRITE DATA
-f1 <- "../results/data_20231024.csv"
+f1 <- "../results/data_20231025.csv"
 write.table(
   x=d2,
   file=f1,
