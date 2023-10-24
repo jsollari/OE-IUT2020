@@ -2,9 +2,9 @@
 #local:      INE, Lisboa
 #Rversion:   4.1.1
 #criado:     23.01.2020
-#modificado: 15.05.2023
+#modificado: 23.10.2023
 
-setwd("2023/2023.05.15_escolas_OE-IUT2020/bin/")
+setwd("2023/2023.10.24_escolas_OE-IUT2020/bin/")
 
 library("ggplot2")
 library("gridExtra")
@@ -30,7 +30,7 @@ library("gridExtra")
 # 1. DATA WRANGLING
 {
 ## 1.1. READ RAW DATA
-f1 <- "../data/datamod_20230515.csv"
+f1 <- "../data/datamod_20231024.csv"
 d1 <- read.table(
   file=f1,
   header=FALSE,
@@ -99,6 +99,7 @@ a22    <- "FRANCISCO.*HOLANDA"
 a23    <- "MONTIJO"
 a24_1  <- "ALBUFEIRA"
 a24_2  <- "(EBSA|E\\.B\\.S\\.A\\.|E\\.\\sB\\.\\sS\\.\\sA\\.)"
+a25    <- "JOSE.*FALCAO"
 s1  <- grepl(a1,d2$PLACE)
 s2  <- grepl(a2,d2$PLACE)
 s3  <- grepl(a3_1,d2$PLACE) | grepl(a3_2,d2$PLACE) | grepl(a3_3,d2$PLACE)
@@ -123,6 +124,7 @@ s21 <- grepl(a21,d2$PLACE)
 s22 <- grepl(a22,d2$PLACE)
 s23 <- grepl(a23,d2$PLACE)
 s24 <- grepl(a24_1,d2$PLACE) | grepl(a24_2,d2$PLACE)
+s25 <- grepl(a25,d2$PLACE)
 d2$PLACE <- NA
 d2$PLACE[s1]  <- "Escola Secundária Poeta Al Berto"
 d2$PLACE[s2]  <- "Escola Secundária Quinta do Marquês"
@@ -148,6 +150,7 @@ d2$PLACE[s21] <- "Colégio Miramar"
 d2$PLACE[s22] <- "Escola Secundária Francisco de Holanda"
 d2$PLACE[s23] <- "Escola Profissional do Montijo"
 d2$PLACE[s24] <- "Escola Básica e Secundária de Albufeira"
+d2$PLACE[s25] <- "Escola Secundária José Falcão"
 d2$PLACE <- factor(d2$PLACE)
 
 ### 1.2.3. Reformat field GRADE <closed field>
@@ -345,7 +348,7 @@ s1 <- d2$SOCIALNET == "Outra"
 cbind(d1$SOCIALNET,as.character(d2$SOCIALNET))[s1,] #6. SOCIALNET = "Outra"
 
 ## 1.4. WRITE DATA
-f1 <- "../results/data_20230515.csv"
+f1 <- "../results/data_20231024.csv"
 write.table(
   x=d2,
   file=f1,
