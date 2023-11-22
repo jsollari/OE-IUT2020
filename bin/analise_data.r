@@ -2,9 +2,9 @@
 #local:      INE, Lisboa
 #Rversion:   4.1.1
 #criado:     23.01.2020
-#modificado: 24.10.2023
+#modificado: 22.11.2023
 
-setwd("2023/2023.10.25_escolas_OE-IUT2020/bin/")
+setwd("2023/2023.11.22_escolas_OE-IUT2020/bin/")
 
 library("ggplot2")
 library("gridExtra")
@@ -30,7 +30,7 @@ library("gridExtra")
 # 1. DATA WRANGLING
 {
 ## 1.1. READ RAW DATA
-f1 <- "../data/datamod_20231025.csv"
+f1 <- "../data/datamod_20231122.csv"
 d1 <- read.table(
   file=f1,
   header=FALSE,
@@ -102,6 +102,8 @@ a24_2  <- "(EBSA|E\\.B\\.S\\.A\\.|E\\.\\sB\\.\\sS\\.\\sA\\.)"
 a25    <- "JOSE.*FALCAO"
 a26_1  <- "CAMILO.*CASTELO.*BRANCO"
 a26_2  <- "(AECCB|A\\.E\\.C\\.C\\.B\\.|A\\.\\sE\\.\\sC\\.\\sC\\.\\sB\\.)"
+a27_1  <- "ESCOLA.*PROFISSIONAL.*DE.*ESTUDOS.*TECNICOS"
+a27_2  <- "(EPET|E\\.P\\.E\\.T|E\\.\\sP\\.\\sE\\.\\sT\\.)"
 s1  <- grepl(a1,d2$PLACE)
 s2  <- grepl(a2,d2$PLACE)
 s3  <- grepl(a3_1,d2$PLACE) | grepl(a3_2,d2$PLACE) | grepl(a3_3,d2$PLACE)
@@ -128,6 +130,7 @@ s23 <- grepl(a23,d2$PLACE)
 s24 <- grepl(a24_1,d2$PLACE) | grepl(a24_2,d2$PLACE)
 s25 <- grepl(a25,d2$PLACE)
 s26 <- grepl(a26_1,d2$PLACE) | grepl(a26_2,d2$PLACE)
+s27 <- grepl(a27_1,d2$PLACE) | grepl(a27_2,d2$PLACE)
 d2$PLACE <- NA
 d2$PLACE[s1]  <- "Escola Secundária Poeta Al Berto"
 d2$PLACE[s2]  <- "Escola Secundária Quinta do Marquês"
@@ -155,6 +158,7 @@ d2$PLACE[s23] <- "Escola Profissional do Montijo"
 d2$PLACE[s24] <- "Escola Básica e Secundária de Albufeira"
 d2$PLACE[s25] <- "Escola Secundária José Falcão"
 d2$PLACE[s26] <- "Agrupamento de Escolas Camilo Castelo Branco"
+d2$PLACE[s27] <- "Escola profissional de estudos técnicos"
 d2$PLACE <- factor(d2$PLACE)
 
 ### 1.2.3. Reformat field GRADE <closed field>
@@ -181,7 +185,7 @@ d2$AGE_FIRST <- as.numeric(gsub(a1,"",d2$AGE_FIRST))
 ### 1.2.8. Reformat field COLOUR <open field>
 d2$COLOUR <- toupper(iconv(enc2utf8(as.character(d2$COLOUR)),"UTF-8","ASCII//TRANSLIT"))
 a1  <- "(PRATEADO|PRATEADA|SILVER)"
-a2  <- "(DOURADO|DOURADA|GOLD)"
+a2  <- "(DOURADO|DOURADA|DORADO|DORADA|GOLD)"
 a3  <- "(BRANCO|BRANCA|WHITE)"
 a4  <- "(PRETO|PRETA|BLACK)"
 a5  <- "(CINZENTO|CINZENTA|CINZA|GREY|GRAY|SINZENTO)"
@@ -356,7 +360,7 @@ s1 <- d2$SOCIALNET == "Outra"
 cbind(d1$SOCIALNET,as.character(d2$SOCIALNET))[s1,] #6. SOCIALNET = "Outra"
 
 ## 1.4. WRITE DATA
-f1 <- "../results/data_20231025.csv"
+f1 <- "../results/data_20231122.csv"
 write.table(
   x=d2,
   file=f1,
