@@ -2,9 +2,9 @@
 #local:      INE, Lisboa
 #Rversion:   4.1.1
 #criado:     23.01.2020
-#modificado: 22.11.2023
+#modificado: 30.11.2023
 
-setwd("2023/2023.11.22_escolas_OE-IUT2020/bin/")
+setwd("2023/2023.11.30_escolas_OE-IUT2020/bin/")
 
 library("ggplot2")
 library("gridExtra")
@@ -30,7 +30,7 @@ library("gridExtra")
 # 1. DATA WRANGLING
 {
 ## 1.1. READ RAW DATA
-f1 <- "../data/datamod_20231122.csv"
+f1 <- "../data/datamod_20231130.csv"
 d1 <- read.table(
   file=f1,
   header=FALSE,
@@ -104,6 +104,7 @@ a26_1  <- "CAMILO.*CASTELO.*BRANCO"
 a26_2  <- "(AECCB|A\\.E\\.C\\.C\\.B\\.|A\\.\\sE\\.\\sC\\.\\sC\\.\\sB\\.)"
 a27_1  <- "ESCOLA.*PROFISSIONAL.*DE.*ESTUDOS.*TECNICOS"
 a27_2  <- "(EPET|E\\.P\\.E\\.T|E\\.\\sP\\.\\sE\\.\\sT\\.)"
+a28    <- "HENRIQUES.*NOGUEIRA"
 s1  <- grepl(a1,d2$PLACE)
 s2  <- grepl(a2,d2$PLACE)
 s3  <- grepl(a3_1,d2$PLACE) | grepl(a3_2,d2$PLACE) | grepl(a3_3,d2$PLACE)
@@ -131,6 +132,7 @@ s24 <- grepl(a24_1,d2$PLACE) | grepl(a24_2,d2$PLACE)
 s25 <- grepl(a25,d2$PLACE)
 s26 <- grepl(a26_1,d2$PLACE) | grepl(a26_2,d2$PLACE)
 s27 <- grepl(a27_1,d2$PLACE) | grepl(a27_2,d2$PLACE)
+s28 <- grepl(a28,d2$PLACE)
 d2$PLACE <- NA
 d2$PLACE[s1]  <- "Escola Secundária Poeta Al Berto"
 d2$PLACE[s2]  <- "Escola Secundária Quinta do Marquês"
@@ -159,6 +161,7 @@ d2$PLACE[s24] <- "Escola Básica e Secundária de Albufeira"
 d2$PLACE[s25] <- "Escola Secundária José Falcão"
 d2$PLACE[s26] <- "Agrupamento de Escolas Camilo Castelo Branco"
 d2$PLACE[s27] <- "Escola profissional de estudos técnicos"
+d2$PLACE[s28] <- "Escola Secundária Henriques Nogueira"
 d2$PLACE <- factor(d2$PLACE)
 
 ### 1.2.3. Reformat field GRADE <closed field>
@@ -227,17 +230,18 @@ d2$PRICE_YN <- ifelse(d2$PRICE_YN=="Sim",TRUE,
 ### 1.2.10. Reformat field PRICE <open field>
 d2$PRICE <- gsub("€|%|£|$","",gsub(",",".",d2$PRICE))
 d2$PRICE <- toupper(iconv(enc2utf8(as.character(d2$PRICE)),"UTF-8","ASCII//TRANSLIT"))
-a1 <- "\\s|\\+(\\/|\\s)?\\-|E TAL|E POUCOS|APROXIMADAMENTE|\\~|EUROS|EURO|ACHO"
+a1 <- c("\\s","\\+(\\/|\\s)?\\-","E TAL","E POUCOS","APROXIMADAMENTE",
+  "APROX\\.","\\~","EUROS","EURO","ACHO","CERCA DE","NO MAXIMO","MAXIMO","ATE",
+  "MAIS DE","MENOS DE","OU MENOS","MENOS","NAO MAIS DO QUE")
+a1 <- paste(a1,collapse="|")
 d2$PRICE <- as.numeric(gsub(a1,"",d2$PRICE))
 
 ### 1.2.11. Reformat field PRICE_NEW <open field>
 d2$PRICE_NEW <- gsub("€|%|£|$","",gsub(",",".",d2$PRICE_NEW))
 d2$PRICE_NEW <- toupper(iconv(enc2utf8(as.character(d2$PRICE_NEW)),"UTF-8","ASCII//TRANSLIT"))
-a1 <- "(^NADA$|^NAO$|^ZERO$|^0$)"
-s1 <- grepl(a1,d2$PRICE_NEW)
+s1 <- grepl("(^NADA$|^NAO$|^ZERO$|^0$)",d2$PRICE_NEW)
 d2$PRICE_NEW[s1] <- NA
 d2$PRICE_NEW <- gsub(",",".",d2$PRICE_NEW)
-a1 <- "\\s|\\+(\\/|\\s)?\\-|CERCA DE|NO MAXIMO|MAXIMO|ATE|MENOS DE|OU MENOS|MENOS|NAO MAIS DO QUE|E TAL|E POUCOS|EUROS|EURO"
 d2$PRICE_NEW <- as.numeric(gsub(a1,"",d2$PRICE_NEW))
 
 ### 1.2.12. Reformat field SOCIALNET <mixed field>
@@ -360,7 +364,7 @@ s1 <- d2$SOCIALNET == "Outra"
 cbind(d1$SOCIALNET,as.character(d2$SOCIALNET))[s1,] #6. SOCIALNET = "Outra"
 
 ## 1.4. WRITE DATA
-f1 <- "../results/data_20231122.csv"
+f1 <- "../results/data_20231130.csv"
 write.table(
   x=d2,
   file=f1,
