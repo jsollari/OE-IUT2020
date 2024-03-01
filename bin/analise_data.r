@@ -2,9 +2,9 @@
 #local:      INE, Lisboa
 #Rversion:   4.1.1
 #criado:     23.01.2020
-#modificado: 10.02.2024
+#modificado: 01.03.2024
 
-setwd("2024/2024.02.10_escolas_OE-IUT2020/bin/")
+setwd("2024/2024.03.01_escolas_OE-IUT2020/bin/")
 
 library("ggplot2")
 library("gridExtra")
@@ -30,7 +30,7 @@ library("gridExtra")
 # 1. DATA WRANGLING
 {
 ## 1.1. READ RAW DATA
-f1 <- "../data/datamod_20240210.csv"
+f1 <- "../data/datamod_20240301.csv"
 d1 <- read.table(
   file=f1,
   header=FALSE,
@@ -108,6 +108,7 @@ a28    <- "HENRIQUES.*NOGUEIRA"
 a29    <- "MOURA"
 a30_1  <- "MANUEL.*(LARANJEIRA|LARANGEIRA)"
 a30_2  <- "(AEML|A\\.E\\.M\\.L|A\\.\\sE\\.\\sM\\.\\sL\\.)"
+a31  <- "(SENHOR|SR).*(MILAGRES|MILAGRE)"
 s1  <- grepl(a1,d2$PLACE)
 s2  <- grepl(a2,d2$PLACE)
 s3  <- grepl(a3_1,d2$PLACE) | grepl(a3_2,d2$PLACE) | grepl(a3_3,d2$PLACE)
@@ -138,6 +139,7 @@ s27 <- grepl(a27_1,d2$PLACE) | grepl(a27_2,d2$PLACE)
 s28 <- grepl(a28,d2$PLACE)
 s29 <- grepl(a29,d2$PLACE)
 s30 <- grepl(a30_1,d2$PLACE) | grepl(a30_2,d2$PLACE)
+s31 <- grepl(a31,d2$PLACE)
 d2$PLACE <- NA
 d2$PLACE[s1]  <- "Escola Secundária Poeta Al Berto"
 d2$PLACE[s2]  <- "Escola Secundária Quinta do Marquês"
@@ -169,6 +171,7 @@ d2$PLACE[s27] <- "Escola profissional de estudos técnicos"
 d2$PLACE[s28] <- "Escola Secundária Henriques Nogueira"
 d2$PLACE[s29] <- "Escola Secundária de Moura"
 d2$PLACE[s30] <- "Agrupamento de Escolas Dr. Manuel Laranjeira"
+d2$PLACE[s31] <- "Colégio Senhor dos Milagres"
 d2$PLACE <- factor(d2$PLACE)
 
 ### 1.2.3. Reformat field GRADE <closed field>
@@ -194,7 +197,7 @@ d2$AGE_FIRST <- as.numeric(gsub(a1,"",d2$AGE_FIRST))
 
 ### 1.2.8. Reformat field COLOUR <open field>
 d2$COLOUR <- toupper(iconv(enc2utf8(as.character(d2$COLOUR)),"UTF-8","ASCII//TRANSLIT"))
-a1  <- "(PRATEADO|PRATEADA|SILVER)"
+a1  <- "(PRATEADO|PRATEADA|SILVER|PRATA)"
 a2  <- "(DOURADO|DOURADA|DORADO|DORADA|GOLD)"
 a3  <- "(BRANCO|BRANCA|WHITE)"
 a4  <- "(PRETO|PRETA|BLACK)"
@@ -372,7 +375,7 @@ s1 <- d2$SOCIALNET == "Outra"
 cbind(d1$SOCIALNET,as.character(d2$SOCIALNET))[s1,] #6. SOCIALNET = "Outra"
 
 ## 1.4. WRITE DATA
-f1 <- "../results/data_20240210.csv"
+f1 <- "../results/data_20240301.csv"
 write.table(
   x=d2,
   file=f1,
@@ -617,7 +620,7 @@ ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
 d5 <- d2[!d2$GRADE %in% "Professor" & d2$SMARTPHONE_YN & d2$PRICE_YN,]
 
 f1 <- "../media/16.glmtab_simple.txt"
-m1 <- glm(PLAY_PHONE ~ log(PRICE),family="binomial",data=d5)
+m1 <- glm(PLAY_PHONE ~ PRICE,family="binomial",data=d5)
 m1_val <- m1$null.deviance - m1$deviance
 m1_df <- m1$df.null - m1$df.residual
 m1_pc <- pchisq(m1_val,m1_df,lower.tail=FALSE)
