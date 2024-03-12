@@ -2,9 +2,9 @@
 #local:      INE, Lisboa
 #Rversion:   4.1.1
 #criado:     23.01.2020
-#modificado: 01.03.2024
+#modificado: 12.03.2024
 
-setwd("2024/2024.03.01_escolas_OE-IUT2020/bin/")
+setwd("2024/2024.03.12_escolas_OE-IUT2020/bin/")
 
 library("ggplot2")
 library("gridExtra")
@@ -30,7 +30,7 @@ library("gridExtra")
 # 1. DATA WRANGLING
 {
 ## 1.1. READ RAW DATA
-f1 <- "../data/datamod_20240301.csv"
+f1 <- "../data/datamod_20240312.csv"
 d1 <- read.table(
   file=f1,
   header=FALSE,
@@ -92,23 +92,24 @@ a15   <- "BAIXO.*BARROSO"
 a16   <- "BATALHA"
 a17   <- "PALMELA"
 a18   <- "CEFAD"
-a19    <- "SA.*BANDEIRA"
-a20    <- "GIL.*VICENTE"
-a21    <- "COLEGIO.*MIRAMAR"
-a22    <- "FRANCISCO.*HOLANDA"
-a23    <- "MONTIJO"
-a24_1  <- "ALBUFEIRA"
-a24_2  <- "(EBSA|E\\.B\\.S\\.A\\.|E\\.\\sB\\.\\sS\\.\\sA\\.)"
-a25    <- "JOSE.*FALCAO"
-a26_1  <- "CAMILO.*CASTELO.*BRANCO"
-a26_2  <- "(AECCB|A\\.E\\.C\\.C\\.B\\.|A\\.\\sE\\.\\sC\\.\\sC\\.\\sB\\.)"
-a27_1  <- "ESCOLA.*PROFISSIONAL.*DE.*ESTUDOS.*TECNICOS"
-a27_2  <- "(EPET|E\\.P\\.E\\.T|E\\.\\sP\\.\\sE\\.\\sT\\.)"
-a28    <- "HENRIQUES.*NOGUEIRA"
-a29    <- "MOURA"
-a30_1  <- "MANUEL.*(LARANJEIRA|LARANGEIRA)"
-a30_2  <- "(AEML|A\\.E\\.M\\.L|A\\.\\sE\\.\\sM\\.\\sL\\.)"
-a31  <- "(SENHOR|SR).*(MILAGRES|MILAGRE)"
+a19   <- "SA.*BANDEIRA"
+a20   <- "GIL.*VICENTE"
+a21   <- "COLEGIO.*MIRAMAR"
+a22   <- "FRANCISCO.*HOLANDA"
+a23   <- "MONTIJO"
+a24_1 <- "ALBUFEIRA"
+a24_2 <- "(EBSA|E\\.B\\.S\\.A\\.|E\\.\\sB\\.\\sS\\.\\sA\\.)"
+a25   <- "JOSE.*FALCAO"
+a26_1 <- "CAMILO.*CASTELO.*BRANCO"
+a26_2 <- "(AECCB|A\\.E\\.C\\.C\\.B\\.|A\\.\\sE\\.\\sC\\.\\sC\\.\\sB\\.)"
+a27_1 <- "ESCOLA.*PROFISSIONAL.*DE.*ESTUDOS.*TECNICOS"
+a27_2 <- "(EPET|E\\.P\\.E\\.T|E\\.\\sP\\.\\sE\\.\\sT\\.)"
+a28   <- "HENRIQUES.*NOGUEIRA"
+a29   <- "MOURA"
+a30_1 <- "MANUEL.*(LARANJEIRA|LARANGEIRA)"
+a30_2 <- "(AEML|A\\.E\\.M\\.L|A\\.\\sE\\.\\sM\\.\\sL\\.)"
+a31   <- "(SENHOR|SR).*(MILAGRES|MILAGRE)"
+a32   <- "(DANIEL|DANIEAL).*SAMPAIO"
 s1  <- grepl(a1,d2$PLACE)
 s2  <- grepl(a2,d2$PLACE)
 s3  <- grepl(a3_1,d2$PLACE) | grepl(a3_2,d2$PLACE) | grepl(a3_3,d2$PLACE)
@@ -140,6 +141,7 @@ s28 <- grepl(a28,d2$PLACE)
 s29 <- grepl(a29,d2$PLACE)
 s30 <- grepl(a30_1,d2$PLACE) | grepl(a30_2,d2$PLACE)
 s31 <- grepl(a31,d2$PLACE)
+s32 <- grepl(a32,d2$PLACE)
 d2$PLACE <- NA
 d2$PLACE[s1]  <- "Escola Secundária Poeta Al Berto"
 d2$PLACE[s2]  <- "Escola Secundária Quinta do Marquês"
@@ -172,6 +174,7 @@ d2$PLACE[s28] <- "Escola Secundária Henriques Nogueira"
 d2$PLACE[s29] <- "Escola Secundária de Moura"
 d2$PLACE[s30] <- "Agrupamento de Escolas Dr. Manuel Laranjeira"
 d2$PLACE[s31] <- "Colégio Senhor dos Milagres"
+d2$PLACE[s32] <- "Escola Secundária Daniel Sampaio"
 d2$PLACE <- factor(d2$PLACE)
 
 ### 1.2.3. Reformat field GRADE <closed field>
@@ -375,7 +378,7 @@ s1 <- d2$SOCIALNET == "Outra"
 cbind(d1$SOCIALNET,as.character(d2$SOCIALNET))[s1,] #6. SOCIALNET = "Outra"
 
 ## 1.4. WRITE DATA
-f1 <- "../results/data_20240301.csv"
+f1 <- "../results/data_20240312.csv"
 write.table(
   x=d2,
   file=f1,
@@ -402,7 +405,7 @@ p1 <- ggplot(d3) +
   labs(x="",y="",title=tlab) +
   scale_fill_discrete(name="",labels=slab) +
   scale_x_discrete(breaks=NULL,labels=NULL)
-ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
+ggsave(f1,p1,"tiff",width=5.25,height=5.25,units="in",dpi=300,compression="lzw")
   
 ### 2.1.2. ACQUIRED (Barplot)
 f1 <- "../media/2.barplot_simple.tif"
@@ -411,7 +414,7 @@ tlab <- "Aquisição do Smartphone"
 p1 <- ggplot(d4) +
   geom_bar(aes(x=ACQUIRED),show.legend=FALSE) +
   labs(x="",y=ylab,title=tlab)
-ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
+ggsave(f1,p1,"tiff",width=5.25,height=5.25,units="in",dpi=300,compression="lzw")
 
 ### 2.1.3. AGE_FIRST (Frequency table)
 f1 <- "../media/3.cumtab.csv"
@@ -441,7 +444,7 @@ p1 <- ggplot(d4) +
     "Roxo"="purple",
     "Outra"="darkgrey"),
     na.value="darkgrey")
-ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
+ggsave(f1,p1,"tiff",width=5.25,height=5.25,units="in",dpi=300,compression="lzw")
 
 ### 2.1.5. PRICE (Boxplot)
 d5 <- d2[!d2$GRADE %in% "Professor" & d2$SMARTPHONE_YN & d2$PRICE_YN,]
@@ -452,8 +455,9 @@ tlab <- "Preço do Smartphone"
 p1 <- ggplot(d5) +
   geom_boxplot(aes(x=factor(1),y=PRICE)) +
   labs(x="",y=ylab,title=tlab) + 
+  scale_y_continuous(expand=c(0, 0), limits=c(0, NA)) +
   scale_x_discrete(breaks=NULL,labels=NULL)
-ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
+ggsave(f1,p1,"tiff",width=5.25,height=5.25,units="in",dpi=300,compression="lzw")
 
 ### 2.1.6. PRICE_NEW (Histogram)
 f1 <- "../media/6.histogram.tif"
@@ -462,8 +466,9 @@ ylab <- "Frequência"
 tlab <-  "Preço disposto a pagar por Smartphone"
 p1 <- ggplot(d4) +
   geom_histogram(aes(x=PRICE_NEW),binwidth=200) +
-  labs(x=xlab,y=ylab,title=tlab)
-ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
+  labs(x=xlab,y=ylab,title=tlab) +
+  scale_x_continuous(expand=c(0, 0), limits=c(0, NA))
+ggsave(f1,p1,"tiff",width=5.25,height=5.25,units="in",dpi=300,compression="lzw")
 
 ### 2.1.7. SOCIALNET vs PLAY_PHONE (Clustered barplot)
 f1 <- "../media/7.barplot_clustered.tif"
@@ -475,7 +480,7 @@ p1 <- ggplot(d4) +
   geom_bar(aes(x=SOCIALNET,fill=PLAY_PHONE),position="dodge") +
   labs(x=xlab,y=ylab,title=tlab) +
   scale_fill_discrete(name=llab,labels=c("Não","Sim")) 
-ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
+ggsave(f1,p1,"tiff",width=5.25,height=5.25,units="in",dpi=300,compression="lzw")
 
 ### 2.1.8. PLAY_OTHER vs PLAY_PHONE (Counts plot)
 f1 <- "../media/8.countplot.tif"
@@ -487,7 +492,7 @@ p1 <- ggplot(d4) +
   labs(x=xlab,y=ylab,title=tlab) +
   scale_x_discrete(labels=c("Não","Sim")) +
   scale_y_discrete(labels=c("Não","Sim"))
-ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
+ggsave(f1,p1,"tiff",width=5.25,height=5.25,units="in",dpi=300,compression="lzw")
 
 ### 2.1.9. SATISFACTION vs PRICE (Stacked barplot)
 d5 <- d2[!d2$GRADE %in% "Professor" & d2$SMARTPHONE_YN & d2$PRICE_YN,]
@@ -502,7 +507,7 @@ p1 <- ggplot(d5) +
   geom_bar(aes(x=SATISFACTION,fill=PRICE_CAT),position="stack") +
   labs(x=xlab,y=ylab,title=tlab) +
   scale_fill_discrete(name=llab) 
-ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
+ggsave(f1,p1,"tiff",width=5.25,height=5.25,units="in",dpi=300,compression="lzw")
 
 ## 2.2. SUMMARY STATISTICS
 
@@ -593,7 +598,7 @@ p1 <- ggplot(d5,aes(x=PRICE,y=PRICE_NEW)) +
   geom_abline(aes(intercept=0,slope=1),linetype="dashed") +
   geom_smooth(method="lm",se=FALSE) +
   labs(x=xlab,y=ylab,title=tlab)
-ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
+ggsave(f1,p1,"tiff",width=5.25,height=5.25,units="in",dpi=300,compression="lzw")
 
 ## 3.2. PRICE_NEW ~ PRICE + PLAY_PHONE [Multiple linear regression]
 d5 <- d2[!d2$GRADE %in% "Professor" & d2$SMARTPHONE_YN & d2$PRICE_YN,]
@@ -614,7 +619,7 @@ p1 <- ggplot(d5,aes(x=PRICE,y=PRICE_NEW,color=PLAY_PHONE)) +
   geom_smooth(method="lm",se=FALSE) +
   labs(x=xlab,y=ylab,title=tlab) +
   scale_color_discrete(name=llab,labels=c("Não","Sim")) 
-ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
+ggsave(f1,p1,"tiff",width=5.25,height=5.25,units="in",dpi=300,compression="lzw")
 
 ## 3.3. PLAY_PHONE ~ PRICE [Simple logistic regression]
 d5 <- d2[!d2$GRADE %in% "Professor" & d2$SMARTPHONE_YN & d2$PRICE_YN,]
@@ -637,7 +642,7 @@ p1 <- ggplot(d5) +
   geom_boxplot(aes(x=PLAY_PHONE,y=PRICE)) +
   labs(x=xlab,y=ylab,title=tlab) +
   scale_x_discrete(labels=c("Não","Sim"))
-ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
+ggsave(f1,p1,"tiff",width=5.25,height=5.25,units="in",dpi=300,compression="lzw")
 
 f1 <- "../media/18.logistic_regression_simple.tif"
 xlab <- "Preço (€)"
@@ -647,7 +652,7 @@ p1 <- ggplot(d5,aes(x=PRICE,y=as.numeric(PLAY_PHONE))) +
   geom_point() +
   geom_smooth(method="glm",method.args=list(family="binomial"),se=FALSE) +
   labs(x=xlab,y=ylab,title=tlab)
-ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
+ggsave(f1,p1,"tiff",width=5.25,height=5.25,units="in",dpi=300,compression="lzw")
 
 ## 3.4. PLAY_PHONE ~ PRICE + SOCIALNET [Multiple logistic regression]
 d5 <- d2[!d2$GRADE %in%"Professor" & d2$SMARTPHONE_YN & d2$PRICE_YN,]
@@ -674,7 +679,7 @@ p1 <- ggplot(d5) +
   labs(x=xlab,y=ylab,title=tlab) +
   scale_x_discrete(labels=c("Não","Sim")) +
   facet_grid(~SOCIALNET)
-ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
+ggsave(f1,p1,"tiff",width=5.25,height=5.25,units="in",dpi=300,compression="lzw")
 
 f1 <- "../media/21.logistic_regression_multiple.tif"
 xlab <- "Preço (€)"
@@ -687,6 +692,6 @@ p1 <- ggplot(d5,aes(x=PRICE,y=as.numeric(PLAY_PHONE),color=SOCIALNET)) +
   geom_smooth(method="glm",method.args=list(family="binomial"),se=FALSE) +
   labs(x=xlab,y=ylab,title=tlab) +
   scale_color_discrete(name=llab)
-ggsave(f1,p1,"tiff",width=7,height=7,units="in",dpi=300,compression="lzw")
+ggsave(f1,p1,"tiff",width=5.25,height=5.25,units="in",dpi=300,compression="lzw")
 
 }
