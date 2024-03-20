@@ -4,7 +4,7 @@
 #criado:     23.01.2020
 #modificado: 12.03.2024
 
-setwd("2024/2024.03.12_escolas_OE-IUT2020/bin/")
+setwd("2024/2024.03.22_escolas_OE-IUT2020/bin/")
 
 library("ggplot2")
 library("gridExtra")
@@ -30,7 +30,7 @@ library("gridExtra")
 # 1. DATA WRANGLING
 {
 ## 1.1. READ RAW DATA
-f1 <- "../data/datamod_20240312.csv"
+f1 <- "../data/datamod_20240322.csv"
 d1 <- read.table(
   file=f1,
   header=FALSE,
@@ -110,6 +110,7 @@ a30_1 <- "MANUEL.*(LARANJEIRA|LARANGEIRA)"
 a30_2 <- "(AEML|A\\.E\\.M\\.L|A\\.\\sE\\.\\sM\\.\\sL\\.)"
 a31   <- "(SENHOR|SR).*(MILAGRES|MILAGRE)"
 a32   <- "(DANIEL|DANIEAL).*SAMPAIO"
+a33   <- "MANUEL.*CARGALEIRO"
 s1  <- grepl(a1,d2$PLACE)
 s2  <- grepl(a2,d2$PLACE)
 s3  <- grepl(a3_1,d2$PLACE) | grepl(a3_2,d2$PLACE) | grepl(a3_3,d2$PLACE)
@@ -142,6 +143,7 @@ s29 <- grepl(a29,d2$PLACE)
 s30 <- grepl(a30_1,d2$PLACE) | grepl(a30_2,d2$PLACE)
 s31 <- grepl(a31,d2$PLACE)
 s32 <- grepl(a32,d2$PLACE)
+s33 <- grepl(a33,d2$PLACE)
 d2$PLACE <- NA
 d2$PLACE[s1]  <- "Escola Secundária Poeta Al Berto"
 d2$PLACE[s2]  <- "Escola Secundária Quinta do Marquês"
@@ -175,6 +177,7 @@ d2$PLACE[s29] <- "Escola Secundária de Moura"
 d2$PLACE[s30] <- "Agrupamento de Escolas Dr. Manuel Laranjeira"
 d2$PLACE[s31] <- "Colégio Senhor dos Milagres"
 d2$PLACE[s32] <- "Escola Secundária Daniel Sampaio"
+d2$PLACE[s33] <- "Escola Secundária Manuel Cargaleiro"
 d2$PLACE <- factor(d2$PLACE)
 
 ### 1.2.3. Reformat field GRADE <closed field>
@@ -246,7 +249,7 @@ d2$PRICE <- toupper(iconv(enc2utf8(as.character(d2$PRICE)),"UTF-8","ASCII//TRANS
 a1 <- c("\\s","\\+(\\/|\\s)?\\-","E TAL","E POUCOS","APROXIMADAMENTE",
   "APROX\\.","\\~","EUROS","EURO","ACHO","CERCA DE","NO MAXIMO","MAXIMO","ATE",
   "MAIS DE","MENOS DE","OU MENOS","MENOS","NAO MAIS DO QUE", "MAIS OU MENOS",
-  "(A|POR) VOLTA (DOS|DE)")
+  "(A|POR) VOLTA (DOS|DE)","QUASE")
 a1 <- paste(a1,collapse="|")
 d2$PRICE <- as.numeric(gsub(a1,"",d2$PRICE))
 
@@ -378,7 +381,7 @@ s1 <- d2$SOCIALNET == "Outra"
 cbind(d1$SOCIALNET,as.character(d2$SOCIALNET))[s1,] #6. SOCIALNET = "Outra"
 
 ## 1.4. WRITE DATA
-f1 <- "../results/data_20240312.csv"
+f1 <- "../results/data_20240322.csv"
 write.table(
   x=d2,
   file=f1,
