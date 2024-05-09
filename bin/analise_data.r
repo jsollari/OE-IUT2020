@@ -2,9 +2,9 @@
 #local:      INE, Lisboa
 #Rversion:   4.1.1
 #criado:     23.01.2020
-#modificado: 05.08.2024
+#modificado: 09.05.2024
 
-setwd("2024/2024.05.08_escolas_OE-IUT2020/bin/")
+setwd("2024/2024.05.09_escolas_OE-IUT2020/bin/")
 
 library("ggplot2")
 library("gridExtra")
@@ -30,7 +30,7 @@ library("gridExtra")
 # 1. DATA WRANGLING
 {
 ## 1.1. READ RAW DATA
-f1 <- "../data/datamod_20240508.csv"
+f1 <- "../data/datamod_20240509.csv"
 d1 <- read.table(
   file=f1,
   header=FALSE,
@@ -113,6 +113,7 @@ a32   <- "(DANIEL|DANIEAL).*SAMPAIO"
 a33   <- "MANUEL.*CARGALEIRO"
 a34   <- "(GUALDIM|GUALDI).*PAIS"
 a35   <- "AL.*BERTO"
+a36   <- "PEDRO.*ALEXANDRINO"
 s1  <- grepl(a1,d2$PLACE)
 s2  <- grepl(a2,d2$PLACE)
 s3  <- grepl(a3_1,d2$PLACE) | grepl(a3_2,d2$PLACE) | grepl(a3_3,d2$PLACE)
@@ -148,6 +149,7 @@ s32 <- grepl(a32,d2$PLACE)
 s33 <- grepl(a33,d2$PLACE)
 s34 <- grepl(a34,d2$PLACE)
 s35 <- grepl(a35,d2$PLACE)
+s36 <- grepl(a36,d2$PLACE)
 d2$PLACE <- NA
 d2$PLACE[s1]  <- "Escola Secundária Poeta Al Berto"
 d2$PLACE[s2]  <- "Escola Secundária Quinta do Marquês"
@@ -184,6 +186,7 @@ d2$PLACE[s32] <- "Escola Secundária Daniel Sampaio"
 d2$PLACE[s33] <- "Escola Secundária Manuel Cargaleiro"
 d2$PLACE[s34] <- "Escola Básica Gualdim Pais"
 d2$PLACE[s35] <- "Escola Secundária Poeta Al Berto"
+d2$PLACE[s36] <- "Escola Secundária Pedro Alexandrino"
 d2$PLACE <- factor(d2$PLACE)
 
 ### 1.2.3. Reformat field GRADE <closed field>
@@ -194,9 +197,9 @@ d2$SMARTPHONE_YN <- ifelse(d2$SMARTPHONE_YN=="Sim",TRUE,
                     ifelse(d2$SMARTPHONE_YN=="Não",FALSE,NA))
 
 ### 1.2.5. Reformat field ACQUIRED <mixed field>
-d2$ACQUIRED <- ifelse(d2$ACQUIRED %in% c("Oferecido","Comprado"),d2$ACQUIRED,
+d2$ACQUIRED <- ifelse(d2$ACQUIRED %in% c("Novo","Usado"),d2$ACQUIRED,
                ifelse(!is.na(d2$ACQUIRED),"Outro",NA))
-d2$ACQUIRED <- factor(d2$ACQUIRED,levels=c("Oferecido","Comprado","Outro"))
+d2$ACQUIRED <- factor(d2$ACQUIRED,levels=c("Novo","Usado","Outro"))
 
 ### 1.2.6. Reformat field AGE_FIRST_YN <yes/no field>
 d2$AGE_FIRST_YN <- ifelse(d2$AGE_FIRST_YN=="Sim",TRUE,
@@ -255,7 +258,7 @@ d2$PRICE <- toupper(iconv(enc2utf8(as.character(d2$PRICE)),"UTF-8","ASCII//TRANS
 a1 <- c("\\s","\\+(\\/|\\s)?\\-","E TAL","E POUCOS","APROXIMADAMENTE",
   "APROX\\.","\\~","EUROS","EURO","ACHO","CERCA DE","NO MAXIMO","MAXIMO","ATE",
   "MAIS DE","MENOS DE","OU MENOS","MENOS","NAO MAIS DO QUE", "MAIS OU MENOS",
-  "(A|POR) VOLTA (DOS|DE)","QUASE")
+  "(A|POR) VOLTA (DOS|DE)","QUASE","POR CONTA DE")
 a1 <- paste(a1,collapse="|")
 d2$PRICE <- as.numeric(gsub(a1,"",d2$PRICE))
 
@@ -387,7 +390,7 @@ s1 <- d2$SOCIALNET == "Outra"
 cbind(d1$SOCIALNET,as.character(d2$SOCIALNET))[s1,] #6. SOCIALNET = "Outra"
 
 ## 1.4. WRITE DATA
-f1 <- "../results/data_20240508.csv"
+f1 <- "../results/data_20240509.csv"
 write.table(
   x=d2,
   file=f1,
@@ -499,6 +502,7 @@ tlab <- "Jogar no Smartphone vs. Jogar noutro dispositivo"
 p1 <- ggplot(d4) +
   geom_count(mapping=aes(x=PLAY_PHONE,y=PLAY_OTHER)) + 
   labs(x=xlab,y=ylab,title=tlab) +
+  scale_size_area() +
   scale_x_discrete(labels=c("Não","Sim")) +
   scale_y_discrete(labels=c("Não","Sim"))
 ggsave(f1,p1,"tiff",width=5.25,height=5.25,units="in",dpi=300,compression="lzw")
