@@ -2,9 +2,9 @@
 #local:      INE, Lisboa
 #Rversion:   4.1.1
 #criado:     23.01.2020
-#modificado: 09.05.2024
+#modificado: 02.12.2024
 
-setwd("2024/2024.05.09_escolas_OE-IUT2020/bin/")
+setwd("2024/2024.12.02_escolas_OE-IUT2020/bin/")
 
 library("ggplot2")
 library("gridExtra")
@@ -30,7 +30,7 @@ library("gridExtra")
 # 1. DATA WRANGLING
 {
 ## 1.1. READ RAW DATA
-f1 <- "../data/datamod_20240509.csv"
+f1 <- "../data/datamod_20241202.csv"
 d1 <- read.table(
   file=f1,
   header=FALSE,
@@ -114,6 +114,7 @@ a33   <- "MANUEL.*CARGALEIRO"
 a34   <- "(GUALDIM|GUALDI).*PAIS"
 a35   <- "AL.*BERTO"
 a36   <- "PEDRO.*ALEXANDRINO"
+a37   <- "(D\\.|DONA).*INES"
 s1  <- grepl(a1,d2$PLACE)
 s2  <- grepl(a2,d2$PLACE)
 s3  <- grepl(a3_1,d2$PLACE) | grepl(a3_2,d2$PLACE) | grepl(a3_3,d2$PLACE)
@@ -150,6 +151,7 @@ s33 <- grepl(a33,d2$PLACE)
 s34 <- grepl(a34,d2$PLACE)
 s35 <- grepl(a35,d2$PLACE)
 s36 <- grepl(a36,d2$PLACE)
+s37 <- grepl(a37,d2$PLACE)
 d2$PLACE <- NA
 d2$PLACE[s1]  <- "Escola Secundária Poeta Al Berto"
 d2$PLACE[s2]  <- "Escola Secundária Quinta do Marquês"
@@ -187,6 +189,7 @@ d2$PLACE[s33] <- "Escola Secundária Manuel Cargaleiro"
 d2$PLACE[s34] <- "Escola Básica Gualdim Pais"
 d2$PLACE[s35] <- "Escola Secundária Poeta Al Berto"
 d2$PLACE[s36] <- "Escola Secundária Pedro Alexandrino"
+d2$PLACE[s37] <- "Escola Secundária Dona Inês de Castro de Alcobaça"
 d2$PLACE <- factor(d2$PLACE)
 
 ### 1.2.3. Reformat field GRADE <closed field>
@@ -215,7 +218,7 @@ d2$COLOUR <- toupper(iconv(enc2utf8(as.character(d2$COLOUR)),"UTF-8","ASCII//TRA
 a1  <- "(PRATEADO|PRATEADA|SILVER|PRATA)"
 a2  <- "(DOURADO|DOURADA|DORADO|DORADA|GOLD)"
 a3  <- "(BRANCO|BRANCA|WHITE)"
-a4  <- "(PRETO|PRETA|BLACK)"
+a4  <- "(PRETO|PRETA|PERTO|BLACK)"
 a5  <- "(CINZENTO|CINZENTA|CINZA|GREY|GRAY|SINZENTO)"
 a6  <- "(AZUL|BLUE|CIANO|CYAN)"
 a7  <- "(VERMELHO|VERMALHO|VERMELHA|VERMALHA|ENCARNADO|ENCARNADA|RED)"
@@ -390,7 +393,7 @@ s1 <- d2$SOCIALNET == "Outra"
 cbind(d1$SOCIALNET,as.character(d2$SOCIALNET))[s1,] #6. SOCIALNET = "Outra"
 
 ## 1.4. WRITE DATA
-f1 <- "../results/data_20240509.csv"
+f1 <- "../results/data_20241202.csv"
 write.table(
   x=d2,
   file=f1,
