@@ -1,7 +1,7 @@
 #autor:      Joao Sollari Lopes
 #local:      INE, Lisboa
 #criado:     31.01.2020
-#modificado: 02.12.2024
+#modificado: 13.12.2024
 
 +bin
   |analise_data.r                       #analise dos dados
@@ -67,8 +67,10 @@
     |OE-IUT2020_slides_20240508.pptx      #slides (v2024-05-08)
     |OE-IUT2020_slides_20240509.pdf       #slides (v2024-05-09)
     |OE-IUT2020_slides_20240509.pptx      #slides (v2024-05-09)
-    |OE-IUT2020_slides_20240212.pdf       #slides (v2024-12-02)
-    |OE-IUT2020_slides_20240212.pptx      #slides (v2024-12-02)
+    |OE-IUT2020_slides_20241202.pdf       #slides (v2024-12-02)
+    |OE-IUT2020_slides_20241202.pptx      #slides (v2024-12-02)
+    |OE-IUT2020_slides_20241213.pdf       #slides (v2024-12-13)
+    |OE-IUT2020_slides_20241213.pptx      #slides (v2024-12-13)
 +media
   |OE-IUT_20180411.mp4                  #video (v20018-04-11)
 +results

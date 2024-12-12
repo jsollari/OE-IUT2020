@@ -2,9 +2,9 @@
 #local:      INE, Lisboa
 #Rversion:   4.1.1
 #criado:     23.01.2020
-#modificado: 02.12.2024
+#modificado: 13.12.2024
 
-setwd("2024/2024.12.02_escolas_OE-IUT2020/bin/")
+setwd("2024/2024.12.13_escolas_OE-IUT2020/bin/")
 
 library("ggplot2")
 library("gridExtra")
@@ -30,7 +30,7 @@ library("gridExtra")
 # 1. DATA WRANGLING
 {
 ## 1.1. READ RAW DATA
-f1 <- "../data/datamod_20241202.csv"
+f1 <- "../data/datamod_20241213.csv"
 d1 <- read.table(
   file=f1,
   header=FALSE,
@@ -114,7 +114,8 @@ a33   <- "MANUEL.*CARGALEIRO"
 a34   <- "(GUALDIM|GUALDI).*PAIS"
 a35   <- "AL.*BERTO"
 a36   <- "PEDRO.*ALEXANDRINO"
-a37   <- "(D\\.|DONA).*INES"
+a37_1   <- "(D\\.|D\\s|DONA).*INES"
+a37_2 <- "(ESDICA|E\\.S\\.D\\.I\\.C\\.A\\.|E\\.\\sS\\.\\sD\\.\\sI\\.\\sC\\.\\sA\\.)"
 s1  <- grepl(a1,d2$PLACE)
 s2  <- grepl(a2,d2$PLACE)
 s3  <- grepl(a3_1,d2$PLACE) | grepl(a3_2,d2$PLACE) | grepl(a3_3,d2$PLACE)
@@ -151,7 +152,7 @@ s33 <- grepl(a33,d2$PLACE)
 s34 <- grepl(a34,d2$PLACE)
 s35 <- grepl(a35,d2$PLACE)
 s36 <- grepl(a36,d2$PLACE)
-s37 <- grepl(a37,d2$PLACE)
+s37 <- grepl(a37_1,d2$PLACE) | grepl(a37_2,d2$PLACE)
 d2$PLACE <- NA
 d2$PLACE[s1]  <- "Escola Secundária Poeta Al Berto"
 d2$PLACE[s2]  <- "Escola Secundária Quinta do Marquês"
@@ -393,7 +394,7 @@ s1 <- d2$SOCIALNET == "Outra"
 cbind(d1$SOCIALNET,as.character(d2$SOCIALNET))[s1,] #6. SOCIALNET = "Outra"
 
 ## 1.4. WRITE DATA
-f1 <- "../results/data_20241202.csv"
+f1 <- "../results/data_20241213.csv"
 write.table(
   x=d2,
   file=f1,
@@ -634,7 +635,9 @@ p1 <- ggplot(d5,aes(x=PRICE,y=PRICE_NEW,color=PLAY_PHONE)) +
   geom_abline(aes(intercept=0,slope=1),linetype="dashed") +
   geom_smooth(method="lm",se=FALSE) +
   labs(x=xlab,y=ylab,title=tlab) +
-  scale_color_discrete(name=llab,labels=c("Não","Sim")) 
+  scale_color_discrete(name=llab,labels=c("Não","Sim")) +
+  theme(legend.position = "bottom") +
+  guides(color = guide_legend(nrow = 1))
 ggsave(f1,p1,"tiff",width=5.25,height=5.25,units="in",dpi=300,compression="lzw")
 
 ## 3.3. PLAY_PHONE ~ PRICE [Simple logistic regression]
@@ -707,7 +710,9 @@ p1 <- ggplot(d5,aes(x=PRICE,y=as.numeric(PLAY_PHONE),color=SOCIALNET)) +
   geom_jitter(shape=1,size=2,width=20,height=0) +
   geom_smooth(method="glm",method.args=list(family="binomial"),se=FALSE) +
   labs(x=xlab,y=ylab,title=tlab) +
-  scale_color_discrete(name=llab)
+  scale_color_discrete(name=llab) +
+  theme(legend.position = "bottom") +
+  guides(color = guide_legend(nrow = 1))
 ggsave(f1,p1,"tiff",width=5.25,height=5.25,units="in",dpi=300,compression="lzw")
 
 }
