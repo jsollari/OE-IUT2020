@@ -2,10 +2,11 @@
 #local:      INE, Lisboa
 #Rversion:   4.1.1
 #criado:     23.01.2020
-#modificado: 13.12.2024
+#modificado: 31.01.2025
 
-setwd("2024/2024.12.13_escolas_OE-IUT2020/bin/")
+setwd("2025/2025.01.31_escolas_OE-IUT2020/bin/")
 
+library("tidyverse")
 library("ggplot2")
 library("gridExtra")
 
@@ -30,7 +31,7 @@ library("gridExtra")
 # 1. DATA WRANGLING
 {
 ## 1.1. READ RAW DATA
-f1 <- "../data/datamod_20241213.csv"
+f1 <- "../data/datamod_20250131.csv"
 d1 <- read.table(
   file=f1,
   header=FALSE,
@@ -66,132 +67,15 @@ d2 <- d1
 d2$TIME <- as.POSIXlt(d2$TIME)
 
 ### 1.2.2. Reformat field PLACE <open field>
-d2$PLACE <- toupper(iconv(enc2utf8(as.character(d2$PLACE)),"UTF-8","ASCII//TRANSLIT"))
-a1    <- "(AL\\sBERTO|AL-BERTO)"
-a2    <- "QUINTA.*MARQUES"
-a3_1  <- "INSTITUTO.*DESENVOLVIMENTO.*SOCIAL"
-a3_2  <- "(IDE|I\\.D\\.E\\.|I\\.\\sD\\.\\sE\\.)"
-a3_3  <- "(IDS|I\\.D\\.S\\.|I\\.\\sD\\.\\sS\\.)"
-a4    <- "FREI.*LUIS.*SOUSA"
-a5    <- "GUADALUPE"
-a6    <- "FUNDAO"
-a7    <- "ANTONIO.*SERGIO"
-a8    <- "PASSOS.*MANUEL"
-a9_1  <- "INSTITUTO.*CIENCIAS.*EDUCATIVAS"
-a9_2  <- "(^ICE$|I\\.C\\.E\\.|I\\.\\sC\\.\\sE\\.)"
-a10_1 <- "ESCOLA.*SUPERIOR.*EDUCACAO.*SANTAREM"
-a10_2 <- "INSTITUTO.*POLITECNICO.*SANTAREM"
-a11_1 <- "SINES"
-a11_2 <- "VASCO.*GAMA"
-a12   <- "FERREIRA.*DIAS"
-a13_1 <- "(LUIS|LUIZ).*FREITAS.*BRANCO"
-a13_2 <- "(ESLFB|E\\.S\\.L\\.F\\.B\\.|E\\.\\sS\\.\\sL\\.\\sF\\.\\sB\\.)"
-a14_1 <- "INSTITUTO.*EDUCACAO.*DESENVOLVIMENTO.*PROFISSIONAL"
-a14_2 <- "(IEDP|I\\.E\\.D\\.P\\.|I\\.\\sE\\.\\sD\\.\\sP\\.)"
-a15   <- "BAIXO.*BARROSO"
-a16   <- "BATALHA"
-a17   <- "PALMELA"
-a18   <- "CEFAD"
-a19   <- "SA.*BANDEIRA"
-a20   <- "GIL.*VICENTE"
-a21   <- "COLEGIO.*MIRAMAR"
-a22   <- "FRANCISCO.*HOLANDA"
-a23   <- "MONTIJO"
-a24_1 <- "ALBUFEIRA"
-a24_2 <- "(EBSA|E\\.B\\.S\\.A\\.|E\\.\\sB\\.\\sS\\.\\sA\\.)"
-a25   <- "JOSE.*FALCAO"
-a26_1 <- "CAMILO.*CASTELO.*BRANCO"
-a26_2 <- "(AECCB|A\\.E\\.C\\.C\\.B\\.|A\\.\\sE\\.\\sC\\.\\sC\\.\\sB\\.)"
-a27_1 <- "ESCOLA.*PROFISSIONAL.*DE.*ESTUDOS.*TECNICOS"
-a27_2 <- "(EPET|E\\.P\\.E\\.T|E\\.\\sP\\.\\sE\\.\\sT\\.)"
-a28   <- "HENRIQUES.*NOGUEIRA"
-a29   <- "MOURA"
-a30_1 <- "MANUEL.*(LARANJEIRA|LARANGEIRA)"
-a30_2 <- "(AEML|A\\.E\\.M\\.L|A\\.\\sE\\.\\sM\\.\\sL\\.)"
-a31   <- "(SENHOR|SR).*(MILAGRES|MILAGRE)"
-a32   <- "(DANIEL|DANIEAL).*SAMPAIO"
-a33   <- "MANUEL.*CARGALEIRO"
-a34   <- "(GUALDIM|GUALDI).*PAIS"
-a35   <- "AL.*BERTO"
-a36   <- "PEDRO.*ALEXANDRINO"
-a37_1   <- "(D\\.|D\\s|DONA).*INES"
-a37_2 <- "(ESDICA|E\\.S\\.D\\.I\\.C\\.A\\.|E\\.\\sS\\.\\sD\\.\\sI\\.\\sC\\.\\sA\\.)"
-s1  <- grepl(a1,d2$PLACE)
-s2  <- grepl(a2,d2$PLACE)
-s3  <- grepl(a3_1,d2$PLACE) | grepl(a3_2,d2$PLACE) | grepl(a3_3,d2$PLACE)
-s4  <- grepl(a4,d2$PLACE)
-s5  <- grepl(a5,d2$PLACE)
-s6  <- grepl(a6,d2$PLACE)
-s7  <- grepl(a7,d2$PLACE)
-s8  <- grepl(a8,d2$PLACE)
-s9  <- grepl(a9_1,d2$PLACE) | grepl(a9_2,d2$PLACE)
-s10 <- grepl(a10_1,d2$PLACE) | grepl(a10_2,d2$PLACE)
-s11 <- grepl(a11_1,d2$PLACE) | grepl(a11_2,d2$PLACE)
-s12 <- grepl(a12,d2$PLACE)
-s13 <- grepl(a13_1,d2$PLACE) | grepl(a13_2,d2$PLACE)
-s14 <- grepl(a14_1,d2$PLACE) | grepl(a14_2,d2$PLACE)
-s15 <- grepl(a15,d2$PLACE)
-s16 <- grepl(a16,d2$PLACE)
-s17 <- grepl(a17,d2$PLACE)
-s18 <- grepl(a18,d2$PLACE)
-s19 <- grepl(a19,d2$PLACE)
-s20 <- grepl(a20,d2$PLACE)
-s21 <- grepl(a21,d2$PLACE)
-s22 <- grepl(a22,d2$PLACE)
-s23 <- grepl(a23,d2$PLACE)
-s24 <- grepl(a24_1,d2$PLACE) | grepl(a24_2,d2$PLACE)
-s25 <- grepl(a25,d2$PLACE)
-s26 <- grepl(a26_1,d2$PLACE) | grepl(a26_2,d2$PLACE)
-s27 <- grepl(a27_1,d2$PLACE) | grepl(a27_2,d2$PLACE)
-s28 <- grepl(a28,d2$PLACE)
-s29 <- grepl(a29,d2$PLACE)
-s30 <- grepl(a30_1,d2$PLACE) | grepl(a30_2,d2$PLACE)
-s31 <- grepl(a31,d2$PLACE)
-s32 <- grepl(a32,d2$PLACE)
-s33 <- grepl(a33,d2$PLACE)
-s34 <- grepl(a34,d2$PLACE)
-s35 <- grepl(a35,d2$PLACE)
-s36 <- grepl(a36,d2$PLACE)
-s37 <- grepl(a37_1,d2$PLACE) | grepl(a37_2,d2$PLACE)
-d2$PLACE <- NA
-d2$PLACE[s1]  <- "Escola Secundária Poeta Al Berto"
-d2$PLACE[s2]  <- "Escola Secundária Quinta do Marquês"
-d2$PLACE[s3]  <- "Instituto de Desenvolvimento Social"
-d2$PLACE[s4]  <- "Externato Frei Luís de Sousa"
-d2$PLACE[s5]  <- "Colégio Guadalupe"
-d2$PLACE[s6]  <- "Agrupamento de Escolas do Fundão"
-d2$PLACE[s7]  <- "Escola Secundária António Sérgio"
-d2$PLACE[s8]  <- "Agrupamento de Escolas Passos Manuel"
-d2$PLACE[s9]  <- "Instituto de Ciências Educativas"
-d2$PLACE[s10] <- "Escola Superior de Educação de Santarém"
-d2$PLACE[s11] <- "Escola Básica Vasco da Gama de Sines"
-d2$PLACE[s12] <- "Escola Secundária Ferreira Dias"
-d2$PLACE[s13] <- "Escola Secundária Luís Freitas Branco"
-d2$PLACE[s14] <- "Instituto de Educação e Desenvolvimento Profissional"
-d2$PLACE[s15] <- "Escola Básica e Secundária Baixo Barroso"
-d2$PLACE[s16] <- "Agrupamento de Escolas da Batalha"
-d2$PLACE[s17] <- "Escola Secundária de Palmela"
-d2$PLACE[s18] <- "Escola Profissional CEFAD"
-d2$PLACE[s19] <- "Agrupamento de Escolas Sá da Bandeira"
-d2$PLACE[s20] <- "Agrupamento de Escolas Gil Vicente"
-d2$PLACE[s21] <- "Colégio Miramar"
-d2$PLACE[s22] <- "Escola Secundária Francisco de Holanda"
-d2$PLACE[s23] <- "Escola Profissional do Montijo"
-d2$PLACE[s24] <- "Escola Básica e Secundária de Albufeira"
-d2$PLACE[s25] <- "Escola Secundária José Falcão"
-d2$PLACE[s26] <- "Agrupamento de Escolas Camilo Castelo Branco"
-d2$PLACE[s27] <- "Escola profissional de estudos técnicos"
-d2$PLACE[s28] <- "Escola Secundária Henriques Nogueira"
-d2$PLACE[s29] <- "Escola Secundária de Moura"
-d2$PLACE[s30] <- "Agrupamento de Escolas Dr. Manuel Laranjeira"
-d2$PLACE[s31] <- "Colégio Senhor dos Milagres"
-d2$PLACE[s32] <- "Escola Secundária Daniel Sampaio"
-d2$PLACE[s33] <- "Escola Secundária Manuel Cargaleiro"
-d2$PLACE[s34] <- "Escola Básica Gualdim Pais"
-d2$PLACE[s35] <- "Escola Secundária Poeta Al Berto"
-d2$PLACE[s36] <- "Escola Secundária Pedro Alexandrino"
-d2$PLACE[s37] <- "Escola Secundária Dona Inês de Castro de Alcobaça"
-d2$PLACE <- factor(d2$PLACE)
+d2$PLACE  <- toupper(iconv(enc2utf8(as.character(d2$PLACE)),"UTF-8","ASCII//TRANSLIT"))
+d2$PLACE_NEW <- NA
+tb_escolas <- read_csv("../data/escolas.csv", col_types="c")
+for(i in 1:nrow(tb_escolas)){
+  isel <- grepl(tb_escolas[i,]$patterns, d2$PLACE)
+  d2$PLACE_NEW[isel] <- tb_escolas[i,]$name
+}
+d2$PLACE <- factor(d2$PLACE_NEW)
+d2 <- d2[,-match("PLACE_NEW", colnames(d2))]
 
 ### 1.2.3. Reformat field GRADE <closed field>
 d2$GRADE <- factor(gsub("ºAno","",d2$GRADE),levels=c(1:12,"Professor"))
@@ -216,41 +100,16 @@ d2$AGE_FIRST <- as.numeric(gsub(a1,"",d2$AGE_FIRST))
 
 ### 1.2.8. Reformat field COLOUR <open field>
 d2$COLOUR <- toupper(iconv(enc2utf8(as.character(d2$COLOUR)),"UTF-8","ASCII//TRANSLIT"))
-a1  <- "(PRATEADO|PRATEADA|SILVER|PRATA)"
-a2  <- "(DOURADO|DOURADA|DORADO|DORADA|GOLD)"
-a3  <- "(BRANCO|BRANCA|WHITE)"
-a4  <- "(PRETO|PRETA|PERTO|BLACK)"
-a5  <- "(CINZENTO|CINZENTA|CINZA|GREY|GRAY|SINZENTO)"
-a6  <- "(AZUL|BLUE|CIANO|CYAN)"
-a7  <- "(VERMELHO|VERMALHO|VERMELHA|VERMALHA|ENCARNADO|ENCARNADA|RED)"
-a8  <- "(ROSA|ROSINHA|ROSE)"
-a9  <- "(VERDE|GREEN)"
-a10 <- "(ROXO|ROXA|ROCHO|ROCHA|LILAS|PURPLE)"
-s1  <- grepl(a1,d2$COLOUR)
-s2  <- grepl(a2,d2$COLOUR)
-s3  <- grepl(a3,d2$COLOUR)
-s4  <- grepl(a4,d2$COLOUR)
-s5  <- grepl(a5,d2$COLOUR)
-s6  <- grepl(a6,d2$COLOUR)
-s7  <- grepl(a7,d2$COLOUR)
-s8  <- grepl(a8,d2$COLOUR)
-s9  <- grepl(a9,d2$COLOUR)
-s10 <- grepl(a10,d2$COLOUR)
-d2$COLOUR[s1] <- "Prateado"
-d2$COLOUR[s2] <- "Dourado"
-d2$COLOUR[s3] <- "Branco"
-d2$COLOUR[s4] <- "Preto"
-d2$COLOUR[s5] <- "Cinzento"
-d2$COLOUR[s6] <- "Azul"
-d2$COLOUR[s7] <- "Vermelho"
-d2$COLOUR[s8] <- "Rosa"
-d2$COLOUR[s9] <- "Verde"
-d2$COLOUR[s10] <- "Roxo"
-d2$COLOUR <- ifelse(d2$COLOUR %in% c("Prateado","Dourado","Branco","Preto",
-  "Cinzento","Azul","Vermelho","Rosa","Verde","Roxo"),d2$COLOUR,
-             ifelse(!is.na(d2$COLOUR),"Outra",NA))
-d2$COLOUR <- factor(d2$COLOUR,levels=c("Prateado","Dourado","Branco","Preto",
-  "Cinzento","Azul","Vermelho","Rosa","Verde","Roxo","Outra"))
+d2$COLOUR_NEW <- NA
+tb_cores <- read_csv("../data/cores.csv", col_types="c")
+for(i in 1:nrow(tb_cores)){
+  isel <- grepl(tb_cores[i,]$patterns, d2$COLOUR)
+  d2$COLOUR_NEW[isel] <- tb_cores[i,]$name
+}
+d2$COLOUR_NEW <- if_else(d2$COLOUR_NEW %in% tb_cores$name, d2$COLOUR_NEW,
+                 if_else(!is.na(d2$COLOUR_NEW), "Outra", NA))
+d2$COLOUR <- factor(d2$COLOUR_NEW, levels = tb_cores$name)
+d2 <- d2[,-match("COLOUR_NEW", colnames(d2))]
 
 ### 1.2.9. Reformat field PRICE_YN <yes/no field>
 d2$PRICE_YN <- ifelse(d2$PRICE_YN=="Sim",TRUE,
@@ -276,44 +135,16 @@ d2$PRICE_NEW <- as.numeric(gsub(a1,"",d2$PRICE_NEW))
 
 ### 1.2.12. Reformat field SOCIALNET <mixed field>
 d2$SOCIALNET <- toupper(iconv(enc2utf8(as.character(d2$SOCIALNET)),"UTF-8","ASCII//TRANSLIT"))
-a1  <- "WHATSAPP"
-a2  <- "INSTAGRAM"
-a3  <- "SNAPCHAT"
-a4  <- "(TWITTER|X)"
-a5  <- "FACEBOOK"
-a6  <- "NENHUMA"
-a7  <- "YOUTUBE"
-a8  <- "(REDDIT|REDIT)"
-a9  <- "(TIKTOK|TIK\\sTOK|TIKOK)"
-a10 <- "TELEGRAM"
-a11 <- "DISCORD"
-s1  <- grepl(a1,d2$SOCIALNET)
-s2  <- grepl(a2,d2$SOCIALNET)
-s3  <- grepl(a3,d2$SOCIALNET)
-s4  <- grepl(a4,d2$SOCIALNET)
-s5  <- grepl(a5,d2$SOCIALNET)
-s6  <- grepl(a6,d2$SOCIALNET)
-s7  <- grepl(a7,d2$SOCIALNET)
-s8  <- grepl(a8,d2$SOCIALNET)
-s9  <- grepl(a9,d2$SOCIALNET)
-s10 <- grepl(a10,d2$SOCIALNET)
-s11 <- grepl(a11,d2$SOCIALNET)
-d2$SOCIALNET[s1]  <- "WhatsApp"
-d2$SOCIALNET[s2]  <- "Instagram"
-d2$SOCIALNET[s3]  <- "Snapchat"
-d2$SOCIALNET[s4]  <- "Twitter"
-d2$SOCIALNET[s5]  <- "Facebook"
-d2$SOCIALNET[s6]  <- "Nenhuma"
-d2$SOCIALNET[s7]  <- "Youtube"
-d2$SOCIALNET[s8]  <- "Reddit"
-d2$SOCIALNET[s9]  <- "TikTok"
-d2$SOCIALNET[s10] <- "Telegram"
-d2$SOCIALNET[s11] <- "Discord"
-d2$SOCIALNET <- ifelse(d2$SOCIALNET %in% c("WhatsApp","Instagram","Snapchat",
-  "Twitter","Facebook","Nenhuma","Youtube","Reddit","TikTok","Telegram","Discord"),d2$SOCIALNET,
-                ifelse(!is.na(d2$SOCIALNET),"Outra",NA))
-d2$SOCIALNET <- factor(d2$SOCIALNET,levels=c("WhatsApp","Instagram","Snapchat",
-  "Twitter","Facebook","Youtube","Reddit","TikTok","Telegram","Discord","Outra","Nenhuma"))
+d2$SOCIALNET_NEW <- NA
+tb_redes <- read_csv("../data/redes_sociais.csv", col_types="c")
+for(i in 1:nrow(tb_redes)){
+  isel <- grepl(tb_redes[i,]$patterns, d2$SOCIALNET)
+  d2$SOCIALNET_NEW[isel] <- tb_redes[i,]$name
+}
+d2$SOCIALNET_NEW <- if_else(d2$SOCIALNET_NEW %in% tb_redes$name, d2$SOCIALNET_NEW,
+                    if_else(!is.na(d2$SOCIALNET_NEW), "Outra", NA))
+d2$SOCIALNET <- factor(d2$SOCIALNET_NEW, levels = tb_redes$name)
+d2 <- d2[,-match("SOCIALNET_NEW", colnames(d2))]
 
 ### 1.2.13. Reformat field PLAY_PHONE <yes/no field>
 d2$PLAY_PHONE <- ifelse(d2$PLAY_PHONE=="Sim",TRUE,
@@ -394,7 +225,7 @@ s1 <- d2$SOCIALNET == "Outra"
 cbind(d1$SOCIALNET,as.character(d2$SOCIALNET))[s1,] #6. SOCIALNET = "Outra"
 
 ## 1.4. WRITE DATA
-f1 <- "../results/data_20241213.csv"
+f1 <- "../results/data_20250131.csv"
 write.table(
   x=d2,
   file=f1,
