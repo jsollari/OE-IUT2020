@@ -37,6 +37,7 @@ name                                                  , patterns
 "Escola Secundária Pedro Alexandrino"                 , "PEDRO.*ALEXANDRINO"
 "Escola Secundária Dona Inês de Castro de Alcobaça"   , "(D\\.|D\\s|DONA).*INES|ESDICA|E\\.S\\.D\\.I\\.C\\.A\\.|E\\.\\sS\\.\\sD\\.\\sI\\.\\sC\\.\\sA\\."
 "Escola de Produção e Formação Profissional"          , "ESCOLA.*PRODUCAO.*FORMACAO.*PROFISSIONAL|LIGA"
+"Agrupamento de Escolas Professor Lindley Cintra"     , "LINDLEY.*CINTRA|LUMIAR"
 
 
 
