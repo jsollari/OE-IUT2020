@@ -2,9 +2,9 @@
 #local:      INE, Lisboa
 #Rversion:   4.1.1
 #criado:     23.01.2020
-#modificado: 18.02.2025
+#modificado: 01.04.22025
 
-setwd("2025/2025.02.18_escolas_OE-IUT2020/bin/")
+setwd("2025/2025.04.01_escolas_OE-IUT2020/bin/")
 
 suppressWarnings(suppressMessages(library("tidyverse")))
 suppressWarnings(suppressMessages(library("janitor")))
@@ -31,7 +31,7 @@ suppressWarnings(suppressMessages(library("gridExtra")))
 # 1. DATA WRANGLING
 {
 ## 1.1. READ RAW DATA
-f1 <- "../data/datamod_20250218.csv"
+f1 <- "../data/datamod_20250401.csv"
 tb1 <- read_csv(f1, col_names = FALSE, skip = 1, col_types = cols(.default = col_character())) |>
   rename(
     TIME = X1,           #Time stamp of interview             <auto>   <POSIXt>
@@ -129,10 +129,10 @@ for(i in 1:nrow(tb_cores)){
 tb2 <- tb2 |> mutate(
   COLOUR = case_when(
     COLOUR_TMP %in% tb_cores$name ~ COLOUR_TMP,
-    !is.na(COLOUR_TMP)            ~ "Outra",
+    !is.na(COLOUR)                ~ "Outra",
     .default = NA
   ),
-  COLOUR = factor(COLOUR, levels = tb_cores$name)
+  COLOUR = factor(COLOUR, levels = c(tb_cores$name, "Outra"))
 )
 rm(tb_cores, COLOUR_TMP)
 
@@ -149,7 +149,8 @@ tb2 <- tb2 |> mutate(
 a1 <- c("\\s", "\\+(\\/|\\s)?\\-", "E TAL", "E POUCOS", "APROXIMADAMENTE",
   "APROX\\.", "\\~", "EUROS", "EURO", "ACHO", "CERCA DE", "NO MAXIMO", "MAXIMO",
   "ATE", "MAIS DE", "MENOS DE", "OU MENOS", "MENOS", "NAO MAIS DO QUE",
-  "MAIS OU MENOS", "(A|POR) VOLTA (DOS|DE)", "QUASE", "POR CONTA DE")
+  "MAIS OU MENOS", "(A|POR) VOLTA (DOS|DE)", "QUASE", "POR CONTA DE",
+  "ATUALMENTE")
 a1 <- paste(a1, collapse = "|")
 tb2 <- tb2 |> mutate(
   PRICE = gsub("€|%|£|$", "", PRICE),
@@ -181,10 +182,10 @@ for(i in 1:nrow(tb_redes)){
 tb2 <- tb2 |> mutate(
   SOCIALNET = case_when(
     SOCIALNET_TMP %in% tb_redes$name ~ SOCIALNET_TMP,
-    !is.na(SOCIALNET_TMP)            ~ "Outra",
+    !is.na(SOCIALNET)                ~ "Outra",
     .default = NA
   ),
-  SOCIALNET = factor(SOCIALNET, levels = tb_redes$name)
+  SOCIALNET = factor(SOCIALNET, levels = c(tb_redes$name, "Outra"))
 )
 rm(tb_redes, SOCIALNET_TMP)
 
@@ -253,33 +254,33 @@ tb2 |>                      #12. PRICE_NEW has to be less than 5000
 ## 1.4. MANUAL CHECKS
 tb2 |> summary(maxsum = 15)
 
-bind_cols(                              #1. ACQUIRED = "Outro"
+bind_cols(                              #1. ACQUIRED %in% c(NA, "Outra")
   tb1 |> select(ACQUIRED) |> rename(ACQUIRED_OLD = ACQUIRED),
   tb2 |> select(ACQUIRED)
-) |> filter(ACQUIRED == "Outro")
+) |> filter(is.na(AQUIRED) | ACQUIRED == "Outro") |> print(n = Inf)
 bind_cols(                              #2. AGE_FIRST = NA
   tb1 |> select(AGE_FIRST) |> rename(AGE_FIRST_OLD = AGE_FIRST),
   tb2 |> select(AGE_FIRST)
-) |> filter(is.na(AGE_FIRST))
-bind_cols(                              #3. COLOUR = "Outra"
+) |> filter(is.na(AGE_FIRST)) |> print(n = Inf)
+bind_cols(                              #3. COLOUR %in% c(NA, "Outra")
   tb1 |> select(COLOUR) |> rename(COLOUR_OLD = COLOUR),
   tb2 |> select(COLOUR)
-) |> filter(COLOUR == "Outra")
+) |> filter(is.na(COLOUR) | COLOUR == "Outra") |> print(n = Inf)
 bind_cols(                              #4. PRICE = NA
   tb1 |> select(PRICE) |> rename(PRICE_OLD = PRICE),
   tb2 |> select(PRICE)
-) |> filter(is.na(PRICE))
+) |> filter(is.na(PRICE)) |> print(n = Inf)
 bind_cols(                              #5. PRICE_NEW = NA
   tb1 |> select(PRICE_NEW) |> rename(PRICE_NEW_OLD = PRICE_NEW),
   tb2 |> select(PRICE_NEW)
-) |> filter(is.na(PRICE_NEW))
-bind_cols(                              #6. SOCIALNET = "Outra"
+) |> filter(is.na(PRICE_NEW)) |> print(n = Inf)
+bind_cols(                              #6. SOCIALNET %in% c(NA, "Outra")
   tb1 |> select(SOCIALNET) |> rename(SOCIALNET_OLD = SOCIALNET),
   tb2 |> select(SOCIALNET)
-) |> filter(SOCIALNET == "Outra")
+) |> filter(is.na(SOCIALNET) | SOCIALNET == "Outra") |> print(n = Inf)
 
 ## 1.4. WRITE DATA
-f1 <- "../results/data_20250218.csv"
+f1 <- "../results/data_20250401.csv"
 tb2 |> write_csv(f1)
 
 }
