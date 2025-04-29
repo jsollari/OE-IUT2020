@@ -2,9 +2,9 @@
 #local:      INE, Lisboa
 #Rversion:   4.1.1
 #criado:     23.01.2020
-#modificado: 01.04.22025
+#modificado: 30.04.22025
 
-setwd("2025/2025.04.01_escolas_OE-IUT2020/bin/")
+if(interactive()) setwd("2025/2025.04.30_escolas_OE-IUT2020/bin/")
 
 suppressWarnings(suppressMessages(library("tidyverse")))
 suppressWarnings(suppressMessages(library("janitor")))
@@ -31,7 +31,7 @@ suppressWarnings(suppressMessages(library("gridExtra")))
 # 1. DATA WRANGLING
 {
 ## 1.1. READ RAW DATA
-f1 <- "../data/datamod_20250401.csv"
+f1 <- "../data/datamod_20250430.csv"
 tb1 <- read_csv(f1, col_names = FALSE, skip = 1, col_types = cols(.default = col_character())) |>
   rename(
     TIME = X1,           #Time stamp of interview             <auto>   <POSIXt>
@@ -153,7 +153,7 @@ a1 <- c("\\s", "\\+(\\/|\\s)?\\-", "E TAL", "E POUCOS", "APROXIMADAMENTE",
   "ATUALMENTE")
 a1 <- paste(a1, collapse = "|")
 tb2 <- tb2 |> mutate(
-  PRICE = gsub("€|%|£|$", "", PRICE),
+  PRICE = gsub("€|%|£|\\$", "", PRICE),
   PRICE = toupper(iconv(enc2utf8(PRICE), "UTF-8", "ASCII//TRANSLIT")),
   PRICE = gsub(a1, "", PRICE),
   PRICE = suppressWarnings(as.numeric(gsub(",", ".", PRICE)))
@@ -161,7 +161,7 @@ tb2 <- tb2 |> mutate(
 
 ### 1.2.11. Reformat field PRICE_NEW <open field>
 tb2 <- tb2 |> mutate(
-  PRICE_NEW = gsub("€|%|£|$", "", PRICE_NEW),
+  PRICE_NEW = gsub("€|%|£|\\$", "", PRICE_NEW),
   PRICE_NEW = toupper(iconv(enc2utf8(PRICE_NEW), "UTF-8", "ASCII//TRANSLIT")),
   PRICE_NEW = if_else(grepl("(^NADA$|^NAO$|^ZERO$|^0$)", PRICE_NEW), NA, PRICE_NEW),
   PRICE_NEW = gsub(a1, "", PRICE_NEW),
@@ -257,7 +257,7 @@ tb2 |> summary(maxsum = 15)
 bind_cols(                              #1. ACQUIRED %in% c(NA, "Outra")
   tb1 |> select(ACQUIRED) |> rename(ACQUIRED_OLD = ACQUIRED),
   tb2 |> select(ACQUIRED)
-) |> filter(is.na(AQUIRED) | ACQUIRED == "Outro") |> print(n = Inf)
+) |> filter(is.na(ACQUIRED) | ACQUIRED == "Outro") |> print(n = Inf)
 bind_cols(                              #2. AGE_FIRST = NA
   tb1 |> select(AGE_FIRST) |> rename(AGE_FIRST_OLD = AGE_FIRST),
   tb2 |> select(AGE_FIRST)
@@ -280,7 +280,7 @@ bind_cols(                              #6. SOCIALNET %in% c(NA, "Outra")
 ) |> filter(is.na(SOCIALNET) | SOCIALNET == "Outra") |> print(n = Inf)
 
 ## 1.4. WRITE DATA
-f1 <- "../results/data_20250401.csv"
+f1 <- "../results/data_20250430.csv"
 tb2 |> write_csv(f1)
 
 }
@@ -542,7 +542,7 @@ p1 <- tb5 |>
   ggplot(aes(x = PRICE, y = PRICE_NEW, color = PLAY_PHONE)) +
   geom_jitter(shape = 1, size = 2, width = 10, height = 10, na.rm = TRUE) +
   geom_abline(aes(intercept = 0, slope = 1), linetype = "dashed") +
-  geom_smooth(method = "lm", se = FALSE, na.rm = TRUE) +
+  geom_smooth(method = "lm", formula = 'y ~ x', se = FALSE, na.rm = TRUE) +
   labs(x = xlab, y = ylab, color = llab, title = tlab) +
   theme(legend.position = "bottom") +
   guides(color = guide_legend(nrow = 1))
@@ -580,7 +580,8 @@ tlab <- "Jogar vs. Preço do Smartphone"
 p1 <- tb5 |>
   ggplot(aes(x = PRICE, y = as.numeric(PLAY_PHONE))) +
   geom_point(na.rm = TRUE) +
-  geom_smooth(method = "glm", method.args = list(family = "binomial"), se = FALSE, na.rm = TRUE) +
+  geom_smooth(method = "glm", method.args = list(family = "binomial"),
+    formula = 'y ~ x', se = FALSE, na.rm = TRUE) +
   labs(x = xlab, y = ylab, title = tlab)
 ggsave(f1, p1, "tiff", width = 5.25, height = 5.25, compression = "lzw")
 
@@ -627,7 +628,8 @@ set.seed(12345)
 p1 <- tb6 |>
   ggplot(aes(x = PRICE, y = as.numeric(PLAY_PHONE), color = SOCIALNET)) +
   geom_jitter(shape = 1, size = 2, width = 20, height = 0, na.rm = TRUE) +
-  geom_smooth(method = "glm", method.args = list(family = "binomial"), se = FALSE, na.rm = TRUE) +
+  geom_smooth(method = "glm", method.args = list(family = "binomial"),
+    formula = 'y ~ x', se = FALSE, na.rm = TRUE) +
   labs(x = xlab, y = ylab, color = llab, title = tlab) +
   theme(legend.position = "bottom") +
   guides(color = guide_legend(nrow = 1))

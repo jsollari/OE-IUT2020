@@ -1,18 +1,18 @@
 name                                                  , patterns
-"Escola Secundária Poeta Al Berto"                    , "AL\\sBERTO|AL-BERTO"
+"Escola Secundária Poeta Al Berto"                    , "AL\sBERTO|AL-BERTO"
 "Escola Secundária Quinta do Marquês"                 , "QUINTA.*MARQUES"
-"Instituto de Desenvolvimento Social"                 , "INSTITUTO.*DESENVOLVIMENTO.*SOCIAL|IDE|I\\.D\\.E\\.|I\\.\\sD\\.\\sE\\.|IDS|I\\.D\\.S\\.|I\\.\\sD\\.\\sS\\."
+"Instituto de Desenvolvimento Social"                 , "INSTITUTO.*DESENVOLVIMENTO.*SOCIAL|IDE|I\.D\.E\.|I\.\sD\.\sE\.|IDS|I\.D\.S\.|I\.\sD\.\sS\."
 "Externato Frei Luís de Sousa"                        , "FREI.*LUIS.*SOUSA"
 "Colégio Guadalupe"                                   , "GUADALUPE"
 "Agrupamento de Escolas do Fundão"                    , "FUNDAO"
 "Escola Secundária António Sérgio"                    , "ANTONIO.*SERGIO"
-"Agrupamento de Escolas Passos Manuel"                , "PASSOS.*MANUEL"
-"Instituto de Ciências Educativas"                    , "INSTITUTO.*CIENCIAS.*EDUCATIVAS"|^ICE$|I\\.C\\.E\\.|I\\.\\sC\\.\\sE\\."
+"Agrupamento de Escolas Passos Manuel"                , "PASSOS.*(MANUEL|MANOEL|MANUAL)"
+"Instituto de Ciências Educativas"                    , "INSTITUTO.*CIENCIAS.*EDUCATIVAS"|^ICE$|I\.C\.E\.|I\.\sC\.\sE\."
 "Escola Superior de Educação de Santarém"             , "ESCOLA.*SUPERIOR.*EDUCACAO.*SANTAREM|INSTITUTO.*POLITECNICO.*SANTAREM"
 "Escola Básica Vasco da Gama de Sines"                , "SINES|VASCO.*GAMA"
 "Escola Secundária Ferreira Dias"                     , "FERREIRA.*DIAS"
-"Escola Secundária Luís Freitas Branco"               , "(LUIS|LUIZ).*FREITAS.*BRANCO|ESLFB|E\\.S\\.L\\.F\\.B\\.|E\\.\\sS\\.\\sL\\.\\sF\\.\\sB\\."
-"Instituto de Educação e Desenvolvimento Profissional", "INSTITUTO.*EDUCACAO.*DESENVOLVIMENTO.*PROFISSIONAL|IEDP|I\\.E\\.D\\.P\\.|I\\.\\sE\\.\\sD\\.\\sP\\."
+"Escola Secundária Luís Freitas Branco"               , "(LUIS|LUIZ).*FREITAS.*BRANCO|ESLFB|E\.S\.L\.F\.B\.|E\.\sS\.\sL\.\sF\.\sB\."
+"Instituto de Educação e Desenvolvimento Profissional", "INSTITUTO.*EDUCACAO.*DESENVOLVIMENTO.*PROFISSIONAL|IEDP|I\.E\.D\.P\.|I\.\sE\.\sD\.\sP\."
 "Escola Básica e Secundária Baixo Barroso"            , "BAIXO.*BARROSO"
 "Agrupamento de Escolas da Batalha"                   , "BATALHA"
 "Escola Secundária de Palmela"                        , "PALMELA"
@@ -22,58 +22,20 @@ name                                                  , patterns
 "Colégio Miramar"                                     , "COLEGIO.*MIRAMAR"
 "Escola Secundária Francisco de Holanda"              , "FRANCISCO.*HOLANDA"
 "Escola Profissional do Montijo"                      , "MONTIJO"
-"Escola Básica e Secundária de Albufeira"             , "ALBUFEIRA|EBSA|E\\.B\\.S\\.A\\.|E\\.\\sB\\.\\sS\\.\\sA\\."
+"Escola Básica e Secundária de Albufeira"             , "ALBUFEIRA|EBSA|E\.B\.S\.A\.|E\.\sB\.\sS\.\sA\."
 "Escola Secundária José Falcão"                       , "JOSE.*FALCAO"
-"Agrupamento de Escolas Camilo Castelo Branco"        , "CAMILO.*CASTELO.*BRANCO|AECCB|A\\.E\\.C\\.C\\.B\\.|A\\.\\sE\\.\\sC\\.\\sC\\.\\sB\\."
-"Escola profissional de estudos técnicos"             , "ESCOLA.*PROFISSIONAL.*DE.*ESTUDOS.*TECNICOS|EPET|E\\.P\\.E\\.T|E\\.\\sP\\.\\sE\\.\\sT\\."
+"Agrupamento de Escolas Camilo Castelo Branco"        , "CAMILO.*CASTELO.*BRANCO|AECCB|A\.E\.C\.C\.B\.|A\.\sE\.\sC\.\sC\.\sB\."
+"Escola profissional de estudos técnicos"             , "ESCOLA.*PROFISSIONAL.*DE.*ESTUDOS.*TECNICOS|EPET|E\.P\.E\.T|E\.\sP\.\sE\.\sT\."
 "Escola Secundária Henriques Nogueira"                , "HENRIQUES.*NOGUEIRA"
 "Escola Secundária de Moura"                          , "MOURA"
-"Agrupamento de Escolas Dr. Manuel Laranjeira"        , "MANUEL.*(LARANJEIRA|LARANGEIRA)|AEML|A\\.E\\.M\\.L|A\\.\\sE\\.\\sM\\.\\sL\\."
+"Agrupamento de Escolas Dr. Manuel Laranjeira"        , "MANUEL.*(LARANJEIRA|LARANGEIRA)|AEML|A\.E\.M\.L|A\.\sE\.\sM\.\sL\."
 "Colégio Senhor dos Milagres"                         , "(SENHOR|SR).*(MILAGRES|MILAGRE)"
 "Escola Secundária Daniel Sampaio"                    , "(DANIEL|DANIEAL).*SAMPAIO"
 "Escola Secundária Manuel Cargaleiro"                 , "MANUEL.*CARGALEIRO"
 "Escola Básica Gualdim Pais"                          , "(GUALDIM|GUALDI).*PAIS"
 "Escola Secundária Poeta Al Berto"                    , "AL.*BERTO"
 "Escola Secundária Pedro Alexandrino"                 , "PEDRO.*ALEXANDRINO"
-"Escola Secundária Dona Inês de Castro de Alcobaça"   , "(D\\.|D\\s|DONA).*INES|ESDICA|E\\.S\\.D\\.I\\.C\\.A\\.|E\\.\\sS\\.\\sD\\.\\sI\\.\\sC\\.\\sA\\."
+"Escola Secundária Dona Inês de Castro de Alcobaça"   , "(D\.|D\s|DONA).*INES|ESDICA|E\.S\.D\.I\.C\.A\.|E\.\sS\.\sD\.\sI\.\sC\.\sA\."
 "Escola de Produção e Formação Profissional"          , "ESCOLA.*PRODUCAO.*FORMACAO.*PROFISSIONAL|LIGA"
 "Agrupamento de Escolas Professor Lindley Cintra"     , "LINDLEY.*CINTRA|LUMIAR"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+"Colégio La Salle"                                    , "SALLE"
