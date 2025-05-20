@@ -40,3 +40,4 @@ name                                                  , patterns
 "Agrupamento de Escolas Professor Lindley Cintra"     , "LINDLEY.*CINTRA|LUMIAR"
 "Colégio La Salle"                                    , "SALLE"
 "Escola Secundária de São João da Talha"              , "JOAO.*TALHA"
+"Escola Secundária de Arganil"                        , "ARGANIL"

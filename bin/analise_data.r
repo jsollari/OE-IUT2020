@@ -1,10 +1,10 @@
 #autor:      Joao Sollari Lopes
 #local:      INE, Lisboa
-#Rversion:   4.1.1
+#Rversion:   4.3.1
 #criado:     23.01.2020
-#modificado: 30.04.22025
+#modificado: 20.05.22025
 
-if(interactive()) setwd("2025/2025.04.30_escolas_OE-IUT2020/bin/")
+if(interactive()) setwd("2025/2025.05.20_escolas_OE-IUT2020/bin/")
 
 suppressWarnings(suppressMessages(library("tidyverse")))
 suppressWarnings(suppressMessages(library("janitor")))
@@ -31,7 +31,7 @@ suppressWarnings(suppressMessages(library("gridExtra")))
 # 1. DATA WRANGLING
 {
 ## 1.1. READ RAW DATA
-f1 <- "../data/datamod_20250430.csv"
+f1 <- "../data/datamod_20250520.csv"
 tb1 <- read_csv(f1, col_names = FALSE, skip = 1, col_types = cols(.default = col_character())) |>
   rename(
     TIME = X1,           #Time stamp of interview             <auto>   <POSIXt>
@@ -109,7 +109,7 @@ tb2 <- tb2 |> mutate(
 )
 
 ### 1.2.7. Reformat field AGE_FIRST <open field>
-a1 <- "(\\s|AOS|TINHA|ANOS|ANO|ANOS DE IDADE)"
+a1 <- "(\\s|AOS|QUANDO|TINHA|ANOS|ANO|ANOS DE IDADE)"
 tb2 <- tb2 |> mutate(
   AGE_FIRST = toupper(iconv(enc2utf8(AGE_FIRST), "UTF-8", "ASCII//TRANSLIT")),
   AGE_FIRST = gsub(a1, "", AGE_FIRST),
@@ -255,32 +255,44 @@ tb2 |>                      #12. PRICE_NEW has to be less than 5000
 tb2 |> summary(maxsum = 15)
 
 bind_cols(                              #1. ACQUIRED %in% c(NA, "Outra")
-  tb1 |> select(ACQUIRED) |> rename(ACQUIRED_OLD = ACQUIRED),
+  tb1 |> select(TIME, ACQUIRED) |> rename(ACQUIRED_OLD = ACQUIRED),
   tb2 |> select(ACQUIRED)
-) |> filter(is.na(ACQUIRED) | ACQUIRED == "Outro") |> print(n = Inf)
+) |>
+  filter(!is.na(ACQUIRED_OLD), is.na(ACQUIRED) | ACQUIRED == "Outro") |>
+  print(n = Inf)
 bind_cols(                              #2. AGE_FIRST = NA
-  tb1 |> select(AGE_FIRST) |> rename(AGE_FIRST_OLD = AGE_FIRST),
+  tb1 |> select(TIME, AGE_FIRST) |> rename(AGE_FIRST_OLD = AGE_FIRST),
   tb2 |> select(AGE_FIRST)
-) |> filter(is.na(AGE_FIRST)) |> print(n = Inf)
+) |>
+  filter(!is.na(AGE_FIRST_OLD), is.na(AGE_FIRST)) |>
+  print(n = Inf)
 bind_cols(                              #3. COLOUR %in% c(NA, "Outra")
-  tb1 |> select(COLOUR) |> rename(COLOUR_OLD = COLOUR),
+  tb1 |> select(TIME, COLOUR) |> rename(COLOUR_OLD = COLOUR),
   tb2 |> select(COLOUR)
-) |> filter(is.na(COLOUR) | COLOUR == "Outra") |> print(n = Inf)
+) |>
+  filter(!is.na(COLOUR_OLD), is.na(COLOUR) | COLOUR == "Outra") |>
+  print(n = Inf)
 bind_cols(                              #4. PRICE = NA
-  tb1 |> select(PRICE) |> rename(PRICE_OLD = PRICE),
+  tb1 |> select(TIME, PRICE) |> rename(PRICE_OLD = PRICE),
   tb2 |> select(PRICE)
-) |> filter(is.na(PRICE)) |> print(n = Inf)
+) |>
+  filter(!is.na(PRICE_OLD), is.na(PRICE)) |>
+  print(n = Inf)
 bind_cols(                              #5. PRICE_NEW = NA
-  tb1 |> select(PRICE_NEW) |> rename(PRICE_NEW_OLD = PRICE_NEW),
+  tb1 |> select(TIME, PRICE_NEW) |> rename(PRICE_NEW_OLD = PRICE_NEW),
   tb2 |> select(PRICE_NEW)
-) |> filter(is.na(PRICE_NEW)) |> print(n = Inf)
+) |>
+  filter(!is.na(PRICE_NEW_OLD), is.na(PRICE_NEW)) |>
+  print(n = Inf)
 bind_cols(                              #6. SOCIALNET %in% c(NA, "Outra")
-  tb1 |> select(SOCIALNET) |> rename(SOCIALNET_OLD = SOCIALNET),
+  tb1 |> select(TIME, SOCIALNET) |> rename(SOCIALNET_OLD = SOCIALNET),
   tb2 |> select(SOCIALNET)
-) |> filter(is.na(SOCIALNET) | SOCIALNET == "Outra") |> print(n = Inf)
+) |>
+  filter(!is.na(SOCIALNET_OLD), is.na(SOCIALNET) | SOCIALNET == "Outra") |>
+  print(n = Inf)
 
 ## 1.4. WRITE DATA
-f1 <- "../results/data_20250430.csv"
+f1 <- "../results/data_20250520.csv"
 tb2 |> write_csv(f1)
 
 }
