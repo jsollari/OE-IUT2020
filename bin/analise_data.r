@@ -2,9 +2,9 @@
 #local:      INE, Lisboa
 #Rversion:   4.3.1
 #criado:     23.01.2020
-#modificado: 20.05.22025
+#modificado: 28.05.22025
 
-if(interactive()) setwd("2025/2025.05.20_escolas_OE-IUT2020/bin/")
+if(interactive()) setwd("2025/2025.05.28_escolas_OE-IUT2020/bin/")
 
 suppressWarnings(suppressMessages(library("tidyverse")))
 suppressWarnings(suppressMessages(library("janitor")))
@@ -31,7 +31,7 @@ suppressWarnings(suppressMessages(library("gridExtra")))
 # 1. DATA WRANGLING
 {
 ## 1.1. READ RAW DATA
-f1 <- "../data/datamod_20250520.csv"
+f1 <- "../data/datamod_20250528.csv"
 tb1 <- read_csv(f1, col_names = FALSE, skip = 1, col_types = cols(.default = col_character())) |>
   rename(
     TIME = X1,           #Time stamp of interview             <auto>   <POSIXt>
@@ -292,7 +292,7 @@ bind_cols(                              #6. SOCIALNET %in% c(NA, "Outra")
   print(n = Inf)
 
 ## 1.4. WRITE DATA
-f1 <- "../results/data_20250520.csv"
+f1 <- "../results/data_20250528.csv"
 tb2 |> write_csv(f1)
 
 }
