@@ -2,9 +2,9 @@
 #local:      INE, Lisboa
 #Rversion:   4.3.1
 #criado:     23.01.2020
-#modificado: 28.05.22025
+#modificado: 19.01.2026
 
-if(interactive()) setwd("2025/2025.05.28_escolas_OE-IUT2020/bin/")
+if(interactive()) setwd("2026/2026.01.19_escolas_OE-IUT2020/bin/")
 
 suppressWarnings(suppressMessages(library("tidyverse")))
 suppressWarnings(suppressMessages(library("janitor")))
@@ -31,7 +31,7 @@ suppressWarnings(suppressMessages(library("gridExtra")))
 # 1. DATA WRANGLING
 {
 ## 1.1. READ RAW DATA
-f1 <- "../data/datamod_20250528.csv"
+f1 <- "../data/datamod_2025.csv"
 tb1 <- read_csv(f1, col_names = FALSE, skip = 1, col_types = cols(.default = col_character())) |>
   rename(
     TIME = X1,           #Time stamp of interview             <auto>   <POSIXt>
@@ -70,14 +70,14 @@ for(i in 1:nrow(tb_escolas)){
   PLACE_TMP[isel] <- tb_escolas[i,]$name
 }
 tb2 <- tb2 |> mutate(
-  PLACE = factor(PLACE_TMP)
+  PLACE = fct(PLACE_TMP)
 )
 rm(tb_escolas, PLACE_TMP)
 
 ### 1.2.3. Reformat field GRADE <closed field>
 tb2 <- tb2 |> mutate(
   GRADE = gsub("ºAno", "", GRADE),
-  GRADE = factor(GRADE, levels = c(1:12, "Professor"))
+  GRADE = fct(GRADE, levels = c(1:12, "Professor"))
 )
 
 ### 1.2.4. Reformat field SMARTPHONE_YN <yes/no field>
@@ -96,7 +96,7 @@ tb2 <- tb2 |> mutate(
     !is.na(ACQUIRED)                 ~ "Outro",
     .default = NA
   ),
-  ACQUIRED = factor(ACQUIRED, levels = c("Novo", "Usado", "Outro"))
+  ACQUIRED = fct(ACQUIRED, levels = c("Novo", "Usado", "Outro"))
 )
 
 ### 1.2.6. Reformat field AGE_FIRST_YN <yes/no field>
@@ -117,7 +117,8 @@ tb2 <- tb2 |> mutate(
 )
 
 ### 1.2.8. Reformat field COLOUR <open field>
-tb_cores <- read_csv("../data/cores.csv", col_types = cols(.default = col_character()))
+f1 <- "../data/cores_short.csv"
+tb_cores <- read_csv(f1, col_types = cols(.default = col_character()))
 tb2 <- tb2 |> mutate(
   COLOUR = toupper(iconv(enc2utf8(COLOUR), "UTF-8", "ASCII//TRANSLIT"))
 )
@@ -132,7 +133,7 @@ tb2 <- tb2 |> mutate(
     !is.na(COLOUR)                ~ "Outra",
     .default = NA
   ),
-  COLOUR = factor(COLOUR, levels = c(tb_cores$name, "Outra"))
+  COLOUR = fct(COLOUR, levels = c(tb_cores$name, "Outra"))
 )
 rm(tb_cores, COLOUR_TMP)
 
@@ -170,7 +171,8 @@ tb2 <- tb2 |> mutate(
 rm(a1)
 
 ### 1.2.12. Reformat field SOCIALNET <mixed field>
-tb_redes <- read_csv("../data/redes_sociais.csv", col_types = cols(.default = col_character()))
+f1 <- "../data/redes_sociais_short.csv"
+tb_redes <- read_csv(f1, col_types = cols(.default = col_character()))
 tb2 <- tb2 |> mutate(
   SOCIALNET = toupper(iconv(enc2utf8(SOCIALNET), "UTF-8", "ASCII//TRANSLIT"))
 )
@@ -185,7 +187,7 @@ tb2 <- tb2 |> mutate(
     !is.na(SOCIALNET)                ~ "Outra",
     .default = NA
   ),
-  SOCIALNET = factor(SOCIALNET, levels = c(tb_redes$name, "Outra"))
+  SOCIALNET = fct(SOCIALNET, levels = c(tb_redes$name, "Outra"))
 )
 rm(tb_redes, SOCIALNET_TMP)
 
@@ -210,7 +212,8 @@ tb2 <- tb2 |> mutate(
 ### 1.2.15. Reformat field SATISFACTION <closed field>
 tb2 <- tb2 |> mutate(
   SATISFACTION = if_else(SATISFACTION %in% 1:5, SATISFACTION, NA),
-  SATISFACTION = factor(SATISFACTION,levels=1:5)
+  SATISFACTION = as.character(SATISFACTION),
+  SATISFACTION = fct(SATISFACTION, levels = as.character(1:5))
 )
 
 ## 1.3. AUTOMATIC CHECKS
@@ -292,7 +295,7 @@ bind_cols(                              #6. SOCIALNET %in% c(NA, "Outra")
   print(n = Inf)
 
 ## 1.4. WRITE DATA
-f1 <- "../results/data_20250528.csv"
+f1 <- "../results/data_2025.csv"
 tb2 |> write_csv(f1)
 
 }
@@ -308,9 +311,11 @@ f1 <- "../media/1.piechart.tif"
 tlab <- "Tem Smartphone?"
 p1 <- tb3 |>
   mutate(
-    SMARTPHONE_YN = factor(SMARTPHONE_YN, levels = c(FALSE, TRUE), labels = c("Não", "Sim"))
+    SMARTPHONE_YN = as.character(SMARTPHONE_YN),
+    SMARTPHONE_YN = fct(SMARTPHONE_YN, levels = c("FALSE", "TRUE")),
+    SMARTPHONE_YN = fct_recode(SMARTPHONE_YN, "Não" = "FALSE", "Sim" = "TRUE")
   ) |>
-  ggplot(aes(x = factor(1), fill = SMARTPHONE_YN)) +
+  ggplot(aes(x = "", fill = SMARTPHONE_YN)) +
   geom_bar() +
   coord_polar("y", start = 0) +
   labs(x = "", y = "", fill = "", title = tlab) +
@@ -368,9 +373,9 @@ ylab <- "Preço (€)"
 tlab <- "Preço do Smartphone"
 p1 <- tb4 |>
   filter(PRICE_YN) |>
-  ggplot(aes(x = factor(1), y = PRICE)) +
+  ggplot(aes(x = "", y = PRICE)) +
   geom_boxplot(na.rm = TRUE) +
-  labs(x = "", y = ylab, title = tlab) + 
+  labs(y = ylab, title = tlab) + 
   scale_y_continuous(expand = c(0, 0), limits = c(0, NA)) +
   scale_x_discrete(breaks = NULL, labels = NULL)
 ggsave(f1, p1, "tiff", width = 5.25, height = 5.25, compression = "lzw")
@@ -395,11 +400,14 @@ tlab <- "Rede social mais usada vs. Jogar no Smartphone"
 llab <- "Jogar"
 p1 <- tb4 |>
   mutate(
-    PLAY_PHONE = factor(PLAY_PHONE, levels = c(FALSE, TRUE), labels = c("Não", "Sim"))
+    PLAY_PHONE = as.character(PLAY_PHONE),
+    PLAY_PHONE = fct(PLAY_PHONE, levels = c("FALSE", "TRUE")),
+    PLAY_PHONE = fct_recode(PLAY_PHONE, "Não" = "FALSE", "Sim" = "TRUE")
   ) |>
   ggplot(aes(x = SOCIALNET, fill = PLAY_PHONE)) +
   geom_bar(position = "dodge") +
-  labs(x = xlab, y = ylab, fill = llab, title = tlab)
+  labs(x = xlab, y = ylab, fill = llab, title = tlab) +
+  theme(axis.text.x = element_text(angle = 20, vjust = 0.9))
 ggsave(f1, p1, "tiff", width = 5.25, height = 5.25, compression = "lzw")
 
 ### 2.1.8. PLAY_OTHER vs PLAY_PHONE (Counts plot)
@@ -409,8 +417,12 @@ ylab <- "Jogar noutro dispositivo"
 tlab <- "Jogar no Smartphone vs. Jogar noutro dispositivo"
 p1 <- tb4 |>
   mutate(
-    PLAY_PHONE = factor(PLAY_PHONE, levels = c(FALSE, TRUE), labels = c("Não", "Sim")),
-    PLAY_OTHER = factor(PLAY_OTHER, levels = c(FALSE, TRUE), labels = c("Não", "Sim"))
+    PLAY_PHONE = as.character(PLAY_PHONE),
+    PLAY_PHONE = fct(PLAY_PHONE, levels = c("FALSE", "TRUE")),
+    PLAY_PHONE = fct_recode(PLAY_PHONE, "Não" = "FALSE", "Sim" = "TRUE"),
+    PLAY_OTHER = as.character(PLAY_OTHER),
+    PLAY_OTHER = fct(PLAY_OTHER, levels = c("FALSE", "TRUE")),
+    PLAY_OTHER = fct_recode(PLAY_OTHER, "Não" = "FALSE", "Sim" = "TRUE")
   ) |>
   ggplot(aes(x = PLAY_PHONE, y = PLAY_OTHER)) +
   geom_count() + 
@@ -426,7 +438,9 @@ tlab <- "Grau de satisfação com o Smartphone"
 llab <- "Preço (€)"
 p1 <- tb4 |>
   filter(PRICE_YN) |>
-  mutate(PRICE_CAT = cut(PRICE, breaks = 5, dig.lab = 4)) |>
+  mutate(
+    PRICE_CAT = cut_width(PRICE, width = 400, center = 200, dig.lab = 4)
+  ) |>
   ggplot(aes(x = SATISFACTION, fill = PRICE_CAT)) +
   geom_bar(position = "stack") +
   labs(x = xlab, y = ylab, fill = llab, title = tlab)
@@ -537,7 +551,7 @@ ggsave(f1, p1, "tiff", width = 5.25, height = 5.25, compression = "lzw")
 
 ## 3.2. PRICE_NEW ~ PRICE + PLAY_PHONE [Multiple linear regression]
 f1 <- "../media/14.lmtab_multiple.txt"
-m2 <- lm(PRICE_NEW ~ PRICE + PLAY_PHONE, data = tb5)
+m2 <- lm(PRICE_NEW ~ PRICE * PLAY_PHONE, data = tb5)
 capture.output("Multiple linear regression:", file = f1)
 capture.output(summary(m2), file = f1, append = TRUE)
 
@@ -549,7 +563,9 @@ llab <- "Jogar"
 set.seed(12345)
 p1 <- tb5 |>
   mutate(
-    PLAY_PHONE = factor(PLAY_PHONE, levels = c(FALSE, TRUE), labels = c("Não", "Sim")),
+    PLAY_PHONE = as.character(PLAY_PHONE),
+    PLAY_PHONE = fct(PLAY_PHONE, levels = c("FALSE", "TRUE")),
+    PLAY_PHONE = fct_recode(PLAY_PHONE, "Não" = "FALSE", "Sim" = "TRUE"),
   ) |>
   ggplot(aes(x = PRICE, y = PRICE_NEW, color = PLAY_PHONE)) +
   geom_jitter(shape = 1, size = 2, width = 10, height = 10, na.rm = TRUE) +
@@ -578,7 +594,9 @@ ylab <- "Preço (€)"
 tlab <- "Jogar vs. Preço do Smartphone"
 p1 <- tb5 |>
   mutate(
-    PLAY_PHONE = factor(PLAY_PHONE, levels = c(FALSE, TRUE), labels = c("Não", "Sim")),
+    PLAY_PHONE = as.character(PLAY_PHONE),
+    PLAY_PHONE = fct(PLAY_PHONE, levels = c("FALSE", "TRUE")),
+    PLAY_PHONE = fct_recode(PLAY_PHONE, "Não" = "FALSE", "Sim" = "TRUE"),
   ) |>
   ggplot(aes(x = PLAY_PHONE, y = PRICE)) +
   geom_boxplot(na.rm = TRUE) +
@@ -600,14 +618,21 @@ ggsave(f1, p1, "tiff", width = 5.25, height = 5.25, compression = "lzw")
 ## 3.4. PLAY_PHONE ~ PRICE + SOCIALNET [Multiple logistic regression]
 tb6 <- tb5 |>
   mutate(
-    PLAY_PHONE_TRUE = sum(PLAY_PHONE),
-    PLAY_PHONE_FALSE = sum(!PLAY_PHONE),
+    n = n(),
+    any_PLAY_PHONE_TRUE = any(PLAY_PHONE),
+    any_PLAY_PHONE_FALSE = any(!PLAY_PHONE),
     .by = SOCIALNET
   ) |>
-  filter(PLAY_PHONE_TRUE != 0,  PLAY_PHONE_FALSE != 0)
+  filter(
+    n > 3,
+    any_PLAY_PHONE_TRUE,
+    any_PLAY_PHONE_FALSE,
+    SOCIALNET != "Outra"
+  ) |>
+  select(-c(n, any_PLAY_PHONE_TRUE,  any_PLAY_PHONE_FALSE))
   
 f1 <- "../media/19.glmtab_multiple.txt"
-m4 <- glm(PLAY_PHONE ~ PRICE + SOCIALNET, family = "binomial", data = tb6)
+m4 <- glm(PLAY_PHONE ~ PRICE*SOCIALNET, family = "binomial", data = tb6)
 m4_val <- m4$null.deviance - m4$deviance
 m4_df <- m4$df.null - m4$df.residual
 m4_pc <- pchisq(m4_val, m4_df, lower.tail = FALSE)
@@ -623,7 +648,9 @@ ylab <- "Preço (€)"
 tlab <- "Jogar vs. Preço do Smartphone (by Rede Social)"
 p1 <- tb6 |>
   mutate(
-    PLAY_PHONE = factor(PLAY_PHONE, levels = c(FALSE, TRUE), labels = c("Não", "Sim")),
+    PLAY_PHONE = as.character(PLAY_PHONE),
+    PLAY_PHONE = fct(PLAY_PHONE, levels = c("FALSE", "TRUE")),
+    PLAY_PHONE = fct_recode(PLAY_PHONE, "Não" = "FALSE", "Sim" = "TRUE"),
   ) |>
   ggplot(aes(x = PLAY_PHONE, y = PRICE)) +
   geom_boxplot(na.rm = TRUE) +

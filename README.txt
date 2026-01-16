@@ -1,14 +1,16 @@
 #autor:      Joao Sollari Lopes
 #local:      INE, Lisboa
 #criado:     31.01.2020
-#modificado: 28.05.2025
+#modificado: 16.01.2026
 
 +bin
   |analise_data.r                       #analise dos dados
 +data
   |cores.csv                            #list of colors
+  |cores_short.csv                      #list of colors (short)
   |escolas.csv                          #list of schools
   |redes_sociais.csv                    #list of social networks
+  |redes_sociais_short.csv              #list of social networks (short)
 +docs
   +2020
     |OE-IUT2020_slides_20200123.pptx    #slides (v2020-01-23)
@@ -52,6 +54,8 @@
     |OE-IUT2020_slides_20250514.pptx    #slides (v2025-05-14)
     |OE-IUT2020_slides_20250520.pptx    #slides (v2025-05-20)
     |OE-IUT2020_slides_20250520.pptx    #slides (v2025-05-28)
+  +2026
+    |OE-IUT2020_slides_20260119.pptx    #slides (v2026-01-19)
 +media
   |OE-IUT_20180411.mp4                  #video (v20018-04-11)
 +results
