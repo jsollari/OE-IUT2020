@@ -1,8 +1,6 @@
 name       , patterns
+"Youtube"  , "YOUTUBE" 
 "WhatsApp" , "WHATSAPP" 
 "Instagram", "INSTAGRAM" 
-"Facebook" , "FACEBOOK" 
-"Youtube"  , "YOUTUBE" 
 "TikTok"   , "(TIKTOK|TIK\sTOK|TIKOK)" 
-"Nenhuma"  , "NENHUMA" 
            

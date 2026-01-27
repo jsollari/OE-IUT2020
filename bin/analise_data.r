@@ -2,9 +2,9 @@
 #local:      INE, Lisboa
 #Rversion:   4.3.1
 #criado:     23.01.2020
-#modificado: 19.01.2026
+#modificado: 29.01.2026
 
-if(interactive()) setwd("2026/2026.01.19_escolas_OE-IUT2020/bin/")
+if(interactive()) setwd("2026/2026.01.29_escolas_OE-IUT2020/bin/")
 
 suppressWarnings(suppressMessages(library("tidyverse")))
 suppressWarnings(suppressMessages(library("janitor")))
@@ -31,8 +31,8 @@ suppressWarnings(suppressMessages(library("gridExtra")))
 # 1. DATA WRANGLING
 {
 ## 1.1. READ RAW DATA
-f1 <- "../data/datamod_2025.csv"
-tb1 <- read_csv(f1, col_names = FALSE, skip = 1, col_types = cols(.default = col_character())) |>
+f1 <- "../data/datamod_20260129.csv"
+tb1 <- read_csv(f1, col_names = FALSE, skip = 1, col_types = cols(.default = "c")) |>
   rename(
     TIME = X1,           #Time stamp of interview             <auto>   <POSIXt>
     PLACE = X2,          #Name of education establishment     <open>   <factor>
@@ -252,7 +252,7 @@ tb2 |>                      #11. PRICE has to be between 0 and 5000
   select(TIME, PRICE)
 tb2 |>                      #12. PRICE_NEW has to be less than 5000
   filter(!is.na(PRICE_NEW), (PRICE_NEW < 0 | PRICE_NEW > 5000)) |>
-  select(PRICE_NEW)
+  select(TIME, PRICE_NEW)
 
 ## 1.4. MANUAL CHECKS
 tb2 |> summary(maxsum = 15)
@@ -295,7 +295,7 @@ bind_cols(                              #6. SOCIALNET %in% c(NA, "Outra")
   print(n = Inf)
 
 ## 1.4. WRITE DATA
-f1 <- "../results/data_2025.csv"
+f1 <- "../results/data_20260129.csv"
 tb2 |> write_csv(f1)
 
 }
@@ -404,8 +404,10 @@ p1 <- tb4 |>
     PLAY_PHONE = fct(PLAY_PHONE, levels = c("FALSE", "TRUE")),
     PLAY_PHONE = fct_recode(PLAY_PHONE, "Não" = "FALSE", "Sim" = "TRUE")
   ) |>
-  ggplot(aes(x = SOCIALNET, fill = PLAY_PHONE)) +
-  geom_bar(position = "dodge") +
+  count(PLAY_PHONE, SOCIALNET) |>
+  complete(PLAY_PHONE, SOCIALNET, fill = list(n = 0)) |>
+  ggplot(aes(x = SOCIALNET, y = n, fill = PLAY_PHONE)) +
+  geom_col(position = "dodge") +
   labs(x = xlab, y = ylab, fill = llab, title = tlab) +
   theme(axis.text.x = element_text(angle = 20, vjust = 0.9))
 ggsave(f1, p1, "tiff", width = 5.25, height = 5.25, compression = "lzw")
@@ -582,7 +584,7 @@ m3 <- glm(PLAY_PHONE ~ PRICE, family = "binomial", data = tb5)
 m3_val <- m3$null.deviance - m3$deviance
 m3_df  <- m3$df.null - m3$df.residual
 m3_pc  <- pchisq(m3_val, m3_df, lower.tail = FALSE)
-m3_or  <- round(exp(cbind(OR = coef(m3), confint.default(m3))), 2)[-1, , drop = FALSE]
+m3_or  <- round(exp(cbind(OR = coef(m3), confint.default(m3))), 3)[-1, , drop = FALSE]
 capture.output("Simple logistic regression:", file = f1)
 capture.output(summary(m3), file = f1, append = TRUE)
 capture.output(m3_pc, file = f1, append = TRUE)
@@ -624,19 +626,19 @@ tb6 <- tb5 |>
     .by = SOCIALNET
   ) |>
   filter(
-    n > 3,
+    n > 4,
     any_PLAY_PHONE_TRUE,
     any_PLAY_PHONE_FALSE,
     SOCIALNET != "Outra"
   ) |>
-  select(-c(n, any_PLAY_PHONE_TRUE,  any_PLAY_PHONE_FALSE))
+  select(-c(n, any_PLAY_PHONE_TRUE, any_PLAY_PHONE_FALSE))
   
 f1 <- "../media/19.glmtab_multiple.txt"
 m4 <- glm(PLAY_PHONE ~ PRICE*SOCIALNET, family = "binomial", data = tb6)
 m4_val <- m4$null.deviance - m4$deviance
 m4_df <- m4$df.null - m4$df.residual
 m4_pc <- pchisq(m4_val, m4_df, lower.tail = FALSE)
-m4_or <- round(exp(cbind(OR = coef(m4), confint.default(m4))), 2)[-1, , drop = FALSE]
+m4_or <- round(exp(cbind(OR = coef(m4), confint.default(m4))), 3)[-1, , drop = FALSE]
 capture.output("Multiple logistic regression:", file = f1)
 capture.output(summary(m4), file = f1, append = TRUE)
 capture.output(m4_pc, file = f1, append = TRUE)

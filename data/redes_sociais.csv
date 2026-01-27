@@ -1,13 +1,13 @@
 name       , patterns
-"WhatsApp" , "WHATSAPP" 
-"Instagram", "INSTAGRAM" 
-"Snapchat" , "SNAPCHAT" 
-"Twitter"  , "(TWITTER|^X$)" 
 "Facebook" , "FACEBOOK" 
 "Youtube"  , "YOUTUBE" 
 "Reddit"   , "(REDDIT|REDIT)" 
-"TikTok"   , "(TIKTOK|TIK\sTOK|TIKOK)" 
+"Twitter"  , "(TWITTER|^X$)" 
+"WhatsApp" , "WHATSAPP" 
+"Instagram", "INSTAGRAM" 
+"Snapchat" , "SNAPCHAT" 
 "Telegram" , "TELEGRAM" 
 "Discord"  , "DISCORD" 
+"TikTok"   , "(TIKTOK|TIK\sTOK|TIKOK)" 
 "Nenhuma"  , "NENHUMA" 
            

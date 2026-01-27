@@ -42,3 +42,4 @@ name                                                  , patterns
 "Escola Secundária de São João da Talha"              , "JOAO.*TALHA"
 "Escola Secundária de Arganil"                        , "ARGANIL"
 "Escola Básica EB 2,3 Quinta de Marrocos"             , "(QUINTA|QUINAT|QUITA).*(MARROCOS|MARRCOCOS)"
+"Escola Técnica Profissional do Ribatejo"             , "RIBATEJO|ETPR|E\.T\.P\.R\.|E\.\sT\.\sP\.\sR\."
