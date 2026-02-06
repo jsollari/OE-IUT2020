@@ -1,5 +1,5 @@
 name                                                  , patterns
-"Escola Secundária Poeta Al Berto"                    , "AL\sBERTO|AL-BERTO"
+"Escola Secundária Poeta Al Berto"                    , "AL\sBERTO|AL-BERTO|ESPAB|E\.S\.P\.A\.B\.|E\.\sS\.\sP\.\sA\.\sB\."
 "Escola Secundária Quinta do Marquês"                 , "QUINTA.*MARQUES"
 "Instituto de Desenvolvimento Social"                 , "INSTITUTO.*DESENVOLVIMENTO.*SOCIAL|IDE|I\.D\.E\.|I\.\sD\.\sE\.|IDS|I\.D\.S\.|I\.\sD\.\sS\."
 "Externato Frei Luís de Sousa"                        , "FREI.*LUIS.*SOUSA"
