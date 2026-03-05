@@ -2,9 +2,9 @@
 #local:      INE, Lisboa
 #Rversion:   4.3.1
 #criado:     23.01.2020
-#modificado: 06.02.2026
+#modificado: 05.03.2026
 
-if(interactive()) setwd("2026/2026.02.09_escolas_OE-IUT2020/bin/")
+if(interactive()) setwd("2026/2026.03.05_escolas_OE-IUT2020/bin/")
 
 suppressWarnings(suppressMessages(library("tidyverse")))
 suppressWarnings(suppressMessages(library("janitor")))
@@ -31,7 +31,7 @@ suppressWarnings(suppressMessages(library("gridExtra")))
 # 1. DATA WRANGLING
 {
 ## 1.1. READ RAW DATA
-f1 <- "../data/datamod_20260209.csv"
+f1 <- "../data/datamod_20260305.csv"
 tb1 <- read_csv(f1, col_names = FALSE, skip = 1, col_types = cols(.default = "c")) |>
   rename(
     TIME = X1,           #Time stamp of interview             <auto>   <POSIXt>
@@ -147,28 +147,30 @@ tb2 <- tb2 |> mutate(
 )
 
 ### 1.2.10. Reformat field PRICE <open field>
-a1 <- c("\\s", "\\+(\\/|\\s)?\\-", "E TAL", "E POUCOS", "APROXIMADAMENTE",
+a1 <- c("<", "≈", "€", "%", "£", "\\$") #Not ASCII
+a1 <- paste(a1, collapse = "|")
+a2 <- c("\\s", "\\+(\\/|\\s)?\\-", "E TAL", "E POUCOS", "APROXIMADAMENTE",
   "APROX\\.", "\\~", "EUROS", "EURO", "ACHO", "CERCA DE", "NO MAXIMO", "MAXIMO",
   "ATE", "MAIS DE", "MENOS DE", "OU MENOS", "MENOS", "NAO MAIS DO QUE",
   "MAIS OU MENOS", "(A|POR) VOLTA (DOS|DE)", "QUASE", "POR CONTA DE",
   "ATUALMENTE")
-a1 <- paste(a1, collapse = "|")
+a2 <- paste(a2, collapse = "|")
 tb2 <- tb2 |> mutate(
-  PRICE = gsub("€|%|£|\\$", "", PRICE),
-  PRICE = toupper(iconv(enc2utf8(PRICE), "UTF-8", "ASCII//TRANSLIT")),
   PRICE = gsub(a1, "", PRICE),
+  PRICE = toupper(iconv(enc2utf8(PRICE), "UTF-8", "ASCII//TRANSLIT")),
+  PRICE = gsub(a2, "", PRICE),
   PRICE = suppressWarnings(as.numeric(gsub(",", ".", PRICE)))
 )
 
 ### 1.2.11. Reformat field PRICE_NEW <open field>
 tb2 <- tb2 |> mutate(
-  PRICE_NEW = gsub("€|%|£|\\$", "", PRICE_NEW),
+  PRICE_NEW = gsub(a1, "", PRICE_NEW),
   PRICE_NEW = toupper(iconv(enc2utf8(PRICE_NEW), "UTF-8", "ASCII//TRANSLIT")),
   PRICE_NEW = if_else(grepl("(^NADA$|^NAO$|^ZERO$|^0$)", PRICE_NEW), NA, PRICE_NEW),
-  PRICE_NEW = gsub(a1, "", PRICE_NEW),
+  PRICE_NEW = gsub(a2, "", PRICE_NEW),
   PRICE_NEW = suppressWarnings(as.numeric(gsub(",", ".", PRICE_NEW)))
 )
-rm(a1)
+rm(a1, a2)
 
 ### 1.2.12. Reformat field SOCIALNET <mixed field>
 f1 <- "../data/redes_sociais_short.csv"
@@ -295,7 +297,7 @@ bind_cols(                              #6. SOCIALNET %in% c(NA, "Outra")
   print(n = Inf)
 
 ## 1.4. WRITE DATA
-f1 <- "../results/data_20260209.csv"
+f1 <- "../results/data_20260305.csv"
 tb2 |> write_csv(f1)
 
 }

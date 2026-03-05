@@ -2,5 +2,6 @@ name       , patterns
 "Youtube"  , "YOUTUBE" 
 "WhatsApp" , "WHATSAPP" 
 "Instagram", "INSTAGRAM" 
+"Snapchat" , "SNAPCHAT" 
 "TikTok"   , "(TIKTOK|TIK\sTOK|TIKOK)" 
            
